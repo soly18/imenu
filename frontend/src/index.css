@@ -50,7 +50,13 @@ body {
   overscroll-behavior-y: contain;
   touch-action: pan-x pan-y;      /* finger scrolls both ways */
   cursor: grab;
+  /* On a mouse, pressing and moving would otherwise highlight the text like a copy selection.
+     Buttons, cards and labels in a touch UI are not meant to be selected. */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
+.drag-scroll input, .drag-scroll textarea { -webkit-user-select: text; user-select: text; cursor: text; }
 .drag-scroll.dragging { cursor: grabbing; user-select: none; scroll-behavior: auto; }
 .drag-scroll.dragging * { cursor: grabbing !important; }
 /* vertical columns inside a horizontal board: let sideways swipes pass through to the board */

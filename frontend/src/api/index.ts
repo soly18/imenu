@@ -75,3 +75,13 @@ export const eodApi = {
 export const tablesApi = {
   list: () => api.get<FloorPlanWithOrders[]>('/tables').then(r => r.data),
 };
+
+// ── Migration from the old (Delphi) database ──────────────────
+export const migrationApi = {
+  get: () => api.get('/migration').then(r => r.data),
+  save: (c: any) => api.put('/migration', c).then(r => r.data),
+  test: (c: any) => api.post('/migration/test', c).then(r => r.data),
+  discover: () => api.post('/migration/discover', {}, { timeout: 60_000 }).then(r => r.data),
+  sync: (dryRun: boolean) =>
+    api.post('/migration/sync', { dryRun }, { timeout: 120_000, validateStatus: () => true }).then(r => r.data),
+};

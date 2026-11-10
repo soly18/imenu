@@ -9,6 +9,7 @@ import BackOfficePage from '@/pages/BackOfficePage';
 import ReportsPage    from '@/pages/ReportsPage';
 import AppLayout      from '@/components/layout/AppLayout';
 import TablesPage from '@/pages/TablesPage';
+import MigrationPage from '@/pages/MigrationPage';
 import OrdersPage from '@/pages/OrdersPage';
 import ProtectedRoute from '@/components/common/ProtectedRoute';
 
@@ -39,6 +40,9 @@ export default function App() {
                     <Route path="/orders"     element={<OrdersPage />} />
                     <Route path="/reports"    element={
                       <ProtectedRoute roles={['admin', 'manager']}><ReportsPage /></ProtectedRoute>
+                    } />
+                    <Route path="/migration"  element={
+                      <ProtectedRoute roles={['admin']}><MigrationPage /></ProtectedRoute>
                     } />
                     <Route path="/backoffice" element={<BackOfficePage />} />
                     <Route path="*"           element={<Navigate to="/dashboard" replace />} />

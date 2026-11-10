@@ -42,7 +42,8 @@ imenu25/
 `/tables`: floor plan with live table status (free / open / sent to kitchen), your own tables highlighted. Tap a free table to open an order, tap an occupied one to continue it. A table can only have one open order: a second waiter tapping it gets the same order.
 
 ## Migrating a customer from the Delphi version
-See `docs/legacy-migration.md` (plan) and `tools/legacy/inspect.sql` (read-only database inspection to run first).
+Admin screen **Migration**: enter the old MySQL 5.5 connection (or press *Find the old computer* on the same Wi-Fi / USB network), check the report, approve once, then it syncs automatically whenever the old computer is reachable. Run `tools/legacy/setup-win7.bat` once on the old computer first. Details and safety rules: `docs/legacy-migration.md`.
+After pulling this version run `npm run migrate` in `backend/` (adds `legacy_connection`, `legacy_map`).
 
 ## Orders board
 `/orders`: live board (refreshes every 10 s) with one column per employee and a colour per status (open, sent to kitchen, paid, cancelled, void). Tap an open order to continue it in the POS. Scrolling works by touch, wheel and mouse drag in both directions (`frontend/src/hooks/useDragScroll.tsx`). To add a status, see the comment at the top of `OrdersPage.tsx`.

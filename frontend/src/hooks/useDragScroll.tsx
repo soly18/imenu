@@ -57,11 +57,14 @@ export function useDragScroll<T extends HTMLElement>() {
       }
     };
 
+    const noDrag = (e: Event) => e.preventDefault();   // no ghost-image drag of links/images
+    el.addEventListener('dragstart', noDrag);
     el.addEventListener('pointerdown', onDown);
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
     window.addEventListener('pointercancel', onUp);
     return () => {
+      el.removeEventListener('dragstart', noDrag);
       el.removeEventListener('pointerdown', onDown);
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);

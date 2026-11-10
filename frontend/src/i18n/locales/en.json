@@ -9,7 +9,8 @@
     "logout": "Logout",
     "reports": "Reports",
     "orders": "Orders",
-    "tables": "Tables"
+    "tables": "Tables",
+    "migration": "Migration"
   },
   "auth": {
     "enterPin": "Enter PIN",
@@ -223,5 +224,52 @@
     "cashier": "Cashier",
     "waiter": "Waiter",
     "kitchen": "Kitchen"
+  },
+  "migration": {
+    "title": "Import from the old iMenu",
+    "state": {
+      "idle": "Not set up",
+      "offline": "Old computer not reachable",
+      "error": "Error",
+      "connected": "Connected",
+      "needs_approval": "Waiting for your approval",
+      "synced": "Synced",
+      "running": "Working…"
+    },
+    "intro": "Reads the menu, tables and employees from the old MySQL 5.5 database and keeps them in sync. The old database is only read, never changed.",
+    "connection": "Old computer",
+    "connectionHelp": "Connect this device to the same Wi-Fi network as the old computer, or with a USB cable (USB network / tethering). On the old computer run tools/legacy/setup-win7.bat once: it creates a read-only user and shows the values to type here.",
+    "find": "Find the old computer",
+    "scanning": "Searching…",
+    "thisDevice": "This device",
+    "noneFound": "No MySQL server found on this network. Check the Wi-Fi / USB connection and that MySQL accepts network connections.",
+    "blocked": "reachable, but not allowed for this device (run setup-win7.bat)",
+    "host": "Address (IP)",
+    "port": "Port",
+    "user": "User",
+    "password": "Password",
+    "passwordSaved": "saved (leave empty to keep)",
+    "database": "Database",
+    "charset": "Text encoding",
+    "test": "Test connection",
+    "save": "Save",
+    "saved": "Saved",
+    "fillRequired": "Address, user, password and database are required",
+    "tables": "tables",
+    "auto": "Automatic",
+    "autoHelp": "When the old computer becomes reachable, check it and sync automatically (after your first approval below).",
+    "lastSeen": "Last contact",
+    "lastSync": "Last sync",
+    "needsApproval": "Check the report below. If it looks right, press Approve and import. After that, syncing happens by itself.",
+    "review": "Check and import",
+    "checkNow": "Check now (changes nothing)",
+    "approve": "Approve and import",
+    "confirmImport": "Import the menu, tables and employees now? Nothing in the old database is changed.",
+    "downloadProfile": "Download database profile",
+    "dryRunNote": "Check only: nothing was written",
+    "importedNote": "Imported",
+    "found": "found",
+    "checkDone": "Check finished",
+    "importDone": "Import finished"
   }
 }

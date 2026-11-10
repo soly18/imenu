@@ -13,6 +13,8 @@ import ordersRoutes    from './routes/orders';
 import dashboardRoutes from './routes/dashboard';
 import employeeRoutes  from './routes/employees';
 import tablesRoutes from './routes/tables';
+import migrationRoutes from './routes/migration';
+import { startMigrationWatcher } from './migration/service';
 import eodRoutes       from './routes/eod';
 
 dotenv.config();
@@ -44,6 +46,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/eod',       eodRoutes);
 app.use('/api/tables',    tablesRoutes);
+app.use('/api/migration', migrationRoutes);
 
 // Health check
 app.get('/health', (_, res) => res.json({ status: 'ok', ts: new Date().toISOString() }));
@@ -64,6 +67,7 @@ async function main() {
     console.log(`\n🚀 iMenu25 API running on http://localhost:${PORT}`);
     console.log(`   Accepting requests from: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
     console.log(`   Environment: ${process.env.NODE_ENV || 'development'}\n`);
+    startMigrationWatcher();
   });
 }
 

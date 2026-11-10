@@ -4,7 +4,30 @@ Goal: take a real customer's existing MySQL database and bring it into the new c
 **without touching the customer's live database, and in a way that can be repeated** (one
 customer today, many later).
 
-> Status: this is the plan. The importer itself cannot be written before we see the real
+## Automatic migration (built)
+In iMenu25 (as admin): **Migration** in the top bar.
+1. Connect this device to the old computer's network (same Wi-Fi, or USB network/tethering: both just give each device an IP).
+2. On the old computer run `tools/legacy/setup-win7.bat` once (read-only MySQL user + firewall). It prints the values to type.
+3. **Find the old computer** (scans this device's networks for MySQL and reads the server's greeting, no password needed) → enter user/password/database → **Test** → **Save**.
+4. Press **Check now**: it reads the old database and shows exactly what would be created, per entity, with samples and warnings. Nothing is written.
+5. If the report is right, **Approve and import**. From then on, with **Automatic** on, the system re-checks every time the old computer becomes reachable (and every 10 minutes while it is) and syncs by itself.
+
+Safety built in: the old database is only read (SELECT/SHOW are the only statements the code can send);
+the password is stored encrypted; an approval is tied to the old database's exact table/column layout,
+so if the layout changes, automatic import stops and asks for a new approval; every imported row is
+remembered, so repeated syncs never duplicate; rows created in the new system are never touched.
+
+What is imported today: floor plan + tables, menu groups, menu items (price, take-away price, VAT, active),
+employees (PIN re-hashed; imported **inactive** if the PIN is missing, non-numeric, or clashes).
+Not yet: sales history, Z reports, modifiers/combos, customers: these need the real schema.
+
+> **Important:** the column mapping uses the names seen in the Delphi sources (`EmployeeID`, `empPrimeLang`,
+> `zoneID`, `OrdersPrice`, …) plus common alternatives, but the real schema has not been seen. The
+> check-first design exists for exactly that: if a required column is not found, that entity is skipped
+> and the report says which columns exist. Send the downloaded database profile (button on the page)
+> and I fix the mapping.
+
+> Status of the rest: this is the plan. The importer itself cannot be written before we see the real
 > legacy schema. Step 1 below produces exactly what is needed.
 
 ## Principles

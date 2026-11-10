@@ -157,6 +157,36 @@ const migrations: string[] = [
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
 
   // ── Orders ──────────────────────────────────────────────────────────────
+  // ── Migration from the legacy (Delphi) database ───────────────────────────
+  `CREATE TABLE IF NOT EXISTS legacy_connection (
+    branch_id          INT PRIMARY KEY,
+    host               VARCHAR(255) NOT NULL,
+    port               INT NOT NULL DEFAULT 3306,
+    db_user            VARCHAR(100) NOT NULL,
+    db_password_enc    TEXT,
+    db_name            VARCHAR(100) NOT NULL,
+    charset            VARCHAR(20) NOT NULL DEFAULT 'utf8',
+    auto_enabled       BOOLEAN DEFAULT FALSE,
+    approved_signature VARCHAR(64) NULL,
+    approved_at        DATETIME NULL,
+    last_state         VARCHAR(30) NULL,
+    last_error         TEXT NULL,
+    last_seen_at       DATETIME NULL,
+    last_sync_at       DATETIME NULL,
+    profile_json       LONGTEXT NULL,
+    report_json        LONGTEXT NULL,
+    updated_at         DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (branch_id) REFERENCES branches(id)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+
+  `CREATE TABLE IF NOT EXISTS legacy_map (
+    branch_id  INT NOT NULL,
+    entity     VARCHAR(30) NOT NULL,
+    legacy_id  VARCHAR(100) NOT NULL,
+    new_id     INT NOT NULL,
+    PRIMARY KEY (branch_id, entity, legacy_id)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+
   `CREATE TABLE IF NOT EXISTS orders (
     id              INT AUTO_INCREMENT PRIMARY KEY,
     branch_id       INT NOT NULL,
