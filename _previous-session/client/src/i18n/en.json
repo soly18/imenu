@@ -1,0 +1,76 @@
+{
+  "app": { "name": "iMenu25" },
+  "lang": { "he": "עברית", "en": "English", "ar": "العربية", "ru": "Русский" },
+  "login": {
+    "title": "Welcome to iMenu",
+    "subtitle": "Restaurant Management System",
+    "username": "Username",
+    "password": "Password",
+    "pin": "Enter PIN",
+    "submit": "Sign In",
+    "error": "Invalid username or password"
+  },
+  "dashboard": {
+    "openTables": "Open Tables",
+    "activeOrders": "Active Orders",
+    "todaySales": "Today's Sales",
+    "openBills": "Open Bills",
+    "modules": {
+      "tables": "Tables",
+      "pos": "POS",
+      "backoffice": "Back Office",
+      "delivery": "Delivery",
+      "reports": "Reports",
+      "clock": "Employee Clock"
+    }
+  },
+  "pos": {
+    "selectCashier": "Select Cashier",
+    "newOrder": "New Order",
+    "total": "Total",
+    "paid": "Paid",
+    "remaining": "Remaining",
+    "change": "Change",
+    "pay": "Pay",
+    "printBill": "Print Bill",
+    "deleteOrder": "Delete Order"
+  },
+  "backoffice": {
+    "nav": {
+      "items": "Items",
+      "employees": "Employees",
+      "discounts": "Discounts",
+      "payMethods": "Payment Methods",
+      "tableMap": "Table Map",
+      "members": "Members",
+      "parameters": "Parameters"
+    },
+    "items": {
+      "title": "Menu Items",
+      "addItem": "Add Item",
+      "name": "Name",
+      "price": "Price",
+      "group": "Category",
+      "active": "Active"
+    }
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "yes": "Yes",
+    "no": "No",
+    "logout": "Logout"
+  },
+  "eod": {
+    "xReport": "X Report",
+    "zReport": "Z Report",
+    "declaration": "Cash Declaration",
+    "confirmZ": "This will close today's cycle. This cannot be undone. Continue?"
+  }
+}

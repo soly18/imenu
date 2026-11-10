@@ -1,0 +1,76 @@
+{
+  "app": { "name": "iMenu25" },
+  "lang": { "he": "עברית", "en": "English", "ar": "العربية", "ru": "Русский" },
+  "login": {
+    "title": "ברוכים הבאים ל-iMenu",
+    "subtitle": "מערכת ניהול מסעדה",
+    "username": "שם משתמש",
+    "password": "סיסמה",
+    "pin": "הזן קוד PIN",
+    "submit": "כניסה",
+    "error": "שם משתמש או סיסמה שגויים"
+  },
+  "dashboard": {
+    "openTables": "שולחנות פתוחים",
+    "activeOrders": "הזמנות פעילות",
+    "todaySales": "מכירות היום",
+    "openBills": "חשבונות פתוחים",
+    "modules": {
+      "tables": "שולחנות",
+      "pos": "קופה",
+      "backoffice": "ניהול",
+      "delivery": "משלוחים",
+      "reports": "דוחות",
+      "clock": "שעון נוכחות"
+    }
+  },
+  "pos": {
+    "selectCashier": "בחר קופאי",
+    "newOrder": "הזמנה חדשה",
+    "total": "סה\"כ",
+    "paid": "שולם",
+    "remaining": "נותר",
+    "change": "עודף",
+    "pay": "תשלום",
+    "printBill": "הדפס חשבון",
+    "deleteOrder": "מחק הזמנה"
+  },
+  "backoffice": {
+    "nav": {
+      "items": "פריטים",
+      "employees": "עובדים",
+      "discounts": "הנחות",
+      "payMethods": "אמצעי תשלום",
+      "tableMap": "מפת שולחנות",
+      "members": "חברי מועדון",
+      "parameters": "הגדרות"
+    },
+    "items": {
+      "title": "פריטי תפריט",
+      "addItem": "הוסף פריט",
+      "name": "שם",
+      "price": "מחיר",
+      "group": "קבוצה",
+      "active": "פעיל"
+    }
+  },
+  "common": {
+    "save": "שמור",
+    "cancel": "ביטול",
+    "delete": "מחק",
+    "edit": "עריכה",
+    "add": "הוסף",
+    "search": "חיפוש",
+    "loading": "טוען...",
+    "error": "אירעה שגיאה",
+    "yes": "כן",
+    "no": "לא",
+    "logout": "יציאה"
+  },
+  "eod": {
+    "xReport": "דוח X",
+    "zReport": "דוח Z",
+    "declaration": "הצהרת מזומן",
+    "confirmZ": "פעולה זו תסגור את מחזור היום. לא ניתן לבטל. להמשיך?"
+  }
+}

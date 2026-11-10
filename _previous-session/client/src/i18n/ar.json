@@ -1,0 +1,8 @@
+{
+  "app": { "name": "iMenu25" },
+  "login": { "title": "مرحبًا بك في iMenu", "subtitle": "نظام إدارة المطعم", "username": "اسم المستخدم", "password": "كلمة المرور", "pin": "أدخل رمز PIN", "submit": "تسجيل الدخول", "error": "اسم مستخدم أو كلمة مرور خاطئة" },
+  "dashboard": { "openTables": "الطاولات المفتوحة", "activeOrders": "الطلبات النشطة", "todaySales": "مبيعات اليوم", "openBills": "الفواتير المفتوحة", "modules": { "tables": "الطاولات", "pos": "نقطة البيع", "backoffice": "الإدارة", "delivery": "التوصيل", "reports": "التقارير", "clock": "ساعة الحضور" } },
+  "pos": { "selectCashier": "اختر الكاشير", "newOrder": "طلب جديد", "total": "المجموع", "paid": "مدفوع", "remaining": "المتبقي", "change": "الباقي", "pay": "دفع", "printBill": "طباعة الفاتورة", "deleteOrder": "حذف الطلب" },
+  "common": { "save": "حفظ", "cancel": "إلغاء", "delete": "حذف", "edit": "تعديل", "add": "إضافة", "search": "بحث", "loading": "جاري التحميل...", "error": "حدث خطأ", "yes": "نعم", "no": "لا", "logout": "تسجيل الخروج" },
+  "eod": { "xReport": "تقرير X", "zReport": "تقرير Z", "declaration": "إعلان النقد", "confirmZ": "سيتم إغلاق دورة اليوم. لا يمكن التراجع. هل تريد المتابعة؟" }
+}
