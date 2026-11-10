@@ -8,6 +8,7 @@ import PosPage        from '@/pages/PosPage';
 import BackOfficePage from '@/pages/BackOfficePage';
 import ReportsPage    from '@/pages/ReportsPage';
 import AppLayout      from '@/components/layout/AppLayout';
+import OrdersPage from '@/pages/OrdersPage';
 import ProtectedRoute from '@/components/common/ProtectedRoute';
 
 const qc = new QueryClient({
@@ -33,6 +34,7 @@ export default function App() {
                   <Routes>
                     <Route path="/dashboard"  element={<DashboardPage />} />
                     <Route path="/pos"        element={<PosPage />} />
+                    <Route path="/orders"     element={<OrdersPage />} />
                     <Route path="/reports"    element={
                       <ProtectedRoute roles={['admin', 'manager']}><ReportsPage /></ProtectedRoute>
                     } />

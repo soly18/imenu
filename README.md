@@ -38,6 +38,9 @@ imenu25/
 - POS: pick category, add items, change quantity, void, send to kitchen, pay (cash/card)
 - Server is the source of truth for order totals
 
+## Orders board
+`/orders`: live board (refreshes every 10 s) with one column per employee and a colour per status (open, sent to kitchen, paid, cancelled, void). Tap an open order to continue it in the POS. Scrolling works by touch, wheel and mouse drag in both directions (`frontend/src/hooks/useDragScroll.tsx`). To add a status, see the comment at the top of `OrdersPage.tsx`.
+
 ## End-of-day reports (X / Z)
 - **X** = live read-only report for the current period; **Z** = frozen, numbered snapshot (Reports page, admin/manager).
 - A period = paid orders and voided items not yet claimed by a Z (`z_report_id IS NULL`), no timestamp math.

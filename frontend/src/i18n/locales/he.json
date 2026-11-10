@@ -7,7 +7,8 @@
     "pos": "קופה",
     "backoffice": "משרד אחורי",
     "logout": "התנתק",
-    "reports": "דוחות"
+    "reports": "דוחות",
+    "orders": "הזמנות"
   },
   "auth": {
     "enterPin": "הכנס PIN",
@@ -85,7 +86,8 @@
     "total": "סה\"כ",
     "date": "תאריך",
     "time": "שעה",
-    "currency": "₪"
+    "currency": "₪",
+    "close": "סגור"
   },
   "payments": {
     "cash": "מזומן",
@@ -190,5 +192,21 @@
     "noData": "אין נתונים בתקופה זו",
     "table": "שולחן",
     "order": "הזמנה"
+  },
+  "orders": {
+    "title": "הזמנות",
+    "active": "פעילות",
+    "all": "הכל",
+    "newOrder": "הזמנה חדשה",
+    "empty": "אין הזמנות להצגה",
+    "me": "אני",
+    "items": "פריטים",
+    "status": {
+      "open": "פתוחה",
+      "sent": "נשלחה למטבח",
+      "paid": "שולמה",
+      "cancelled": "בוטלה",
+      "void": "מבוטלת"
+    }
   }
 }

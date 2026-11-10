@@ -44,8 +44,20 @@ body {
          h-16 rounded-2xl hover:bg-gray-50 active:bg-gray-100 shadow-sm;
 }
 
+/* ── Scrolling: touch + wheel + mouse drag ─────────────────── */
+.drag-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  touch-action: pan-x pan-y;      /* finger scrolls both ways */
+  cursor: grab;
+}
+.drag-scroll.dragging { cursor: grabbing; user-select: none; scroll-behavior: auto; }
+.drag-scroll.dragging * { cursor: grabbing !important; }
+/* vertical columns inside a horizontal board: let sideways swipes pass through to the board */
+.drag-scroll [data-vscroll] { overscroll-behavior-y: contain; overscroll-behavior-x: auto; touch-action: pan-x pan-y; }
+
 /* ── Scrollbar ─────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }

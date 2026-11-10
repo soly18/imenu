@@ -272,3 +272,12 @@ export interface ZReportListItem {
   cashDifference: number | null;
   generatedBy: string; generatedAt: string;
 }
+
+/** One row of the orders board (current period, whole branch). */
+export interface OrderBoardItem {
+  id: number; orderNumber: string; tableLabel: string | null;
+  employeeId: number; employeeName: string;
+  status: OrderStatus; orderType: OrderType;
+  guestCount: number; itemCount: number; total: number;
+  openedAt: string; closedAt: string | null;
+}

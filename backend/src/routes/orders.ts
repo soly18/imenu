@@ -1,6 +1,7 @@
 import { Router, Response } from 'express';
 import { pool } from '../db/connection';
 import { authenticate, requireRole, AuthRequest } from '../middleware/auth';
+import { getPeriodStart } from '../services/eodReport';
 
 const router = Router();
 
@@ -39,6 +40,32 @@ router.get('/', authenticate, async (req: AuthRequest, res: Response) => {
     params
   );
   return res.json(orders);
+});
+
+
+// GET /api/orders/board — every order of the current period for the whole branch, with employee name.
+// Period = open/sent orders + paid orders not yet in a Z + orders cancelled since the last Z.
+router.get('/board', authenticate, async (req: AuthRequest, res: Response) => {
+  const branchId = req.user!.branchId;
+  const since = await getPeriodStart(pool, branchId);
+  const [rows]: any = await pool.execute(
+    `SELECT o.id, o.order_number AS orderNumber, t.label AS tableLabel,
+            o.employee_id AS employeeId, CONCAT(e.first_name, ' ', e.last_name) AS employeeName,
+            o.status, o.order_type AS orderType, o.guest_count AS guestCount, o.total,
+            o.opened_at AS openedAt, o.closed_at AS closedAt,
+            (SELECT COALESCE(SUM(oi.quantity), 0) FROM order_items oi
+              WHERE oi.order_id = o.id AND oi.is_voided = 0) AS itemCount
+     FROM orders o
+     LEFT JOIN tables t ON t.id = o.table_id
+     JOIN employees e ON e.id = o.employee_id
+     WHERE o.branch_id = ?
+       AND ( o.status IN ('open','sent')
+          OR (o.status = 'paid' AND o.z_report_id IS NULL)
+          OR (o.status IN ('cancelled','void') AND o.closed_at >= ?) )
+     ORDER BY o.opened_at DESC`,
+    [branchId, since]
+  );
+  return res.json(rows.map((r: any) => ({ ...r, total: Number(r.total), itemCount: Number(r.itemCount) })));
 });
 
 // GET /api/orders/:id  (full order with items)

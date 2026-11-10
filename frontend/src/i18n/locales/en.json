@@ -7,7 +7,8 @@
     "pos": "POS",
     "backoffice": "Back Office",
     "logout": "Logout",
-    "reports": "Reports"
+    "reports": "Reports",
+    "orders": "Orders"
   },
   "auth": {
     "enterPin": "Enter PIN",
@@ -85,7 +86,8 @@
     "total": "Total",
     "date": "Date",
     "time": "Time",
-    "currency": "₪"
+    "currency": "₪",
+    "close": "Close"
   },
   "payments": {
     "cash": "Cash",
@@ -190,5 +192,21 @@
     "noData": "No data in this period",
     "table": "Table",
     "order": "Order"
+  },
+  "orders": {
+    "title": "Orders",
+    "active": "Active",
+    "all": "All",
+    "newOrder": "New order",
+    "empty": "No orders to show",
+    "me": "me",
+    "items": "items",
+    "status": {
+      "open": "Open",
+      "sent": "Sent to kitchen",
+      "paid": "Paid",
+      "cancelled": "Cancelled",
+      "void": "Void"
+    }
   }
 }

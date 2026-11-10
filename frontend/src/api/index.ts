@@ -1,7 +1,7 @@
 import api from './client';
 import type {
   LoginRequest, LoginResponse, DashboardKPIs, MenuGroup, MenuItem, Order,
-  PaymentMethod, EodReport, EodStatus, ZReportListItem,
+  PaymentMethod, OrderBoardItem, EodReport, EodStatus, ZReportListItem,
 } from '@imenu25/shared';
 
 // ── Auth ──────────────────────────────────────────────────────
@@ -33,6 +33,7 @@ export const menuApi = {
 export const ordersApi = {
   list: (params?: { status?: string; tableId?: number }) =>
     api.get<Order[]>('/orders', { params }).then(r => r.data),
+  board: () => api.get<OrderBoardItem[]>('/orders/board').then(r => r.data),
   get: (id: number) => api.get<Order>(`/orders/${id}`).then(r => r.data),
   create: (data: { tableId?: number; orderType?: string; guestCount?: number }) =>
     api.post('/orders', data).then(r => r.data),

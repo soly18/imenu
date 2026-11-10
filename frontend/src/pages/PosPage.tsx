@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 import { menuApi, ordersApi } from '@/api';
+import { DragScroll } from '@/hooks/useDragScroll';
 import { usePosStore } from '@/store/posStore';
 import type { MenuItem, MenuGroup } from '@imenu25/shared';
 
@@ -161,7 +162,7 @@ export default function PosPage() {
       {/* ── Left: Menu ─────────────────────────────── */}
       <div className="flex-1 flex flex-col min-w-0 bg-gray-50">
         {/* Group bar */}
-        <div className="flex gap-2 p-3 overflow-x-auto bg-white border-b border-gray-100">
+        <DragScroll className="flex gap-2 p-3 overflow-x-auto bg-white border-b border-gray-100">
           {groups.map((g) => (
             <button
               key={g.id}
@@ -176,10 +177,10 @@ export default function PosPage() {
               {g.namePrimary}
             </button>
           ))}
-        </div>
+        </DragScroll>
 
         {/* Items grid */}
-        <div className="flex-1 overflow-y-auto p-3">
+        <DragScroll className="flex-1 overflow-y-auto p-3">
           {!activeGroup ? (
             <div className="flex items-center justify-center h-full text-gray-400">
               <div className="text-center">
@@ -203,7 +204,7 @@ export default function PosPage() {
               ))}
             </div>
           )}
-        </div>
+        </DragScroll>
       </div>
 
       {/* ── Right: Order ───────────────────────────── */}
@@ -214,7 +215,7 @@ export default function PosPage() {
         </div>
 
         {/* Order items */}
-        <div className="flex-1 overflow-y-auto p-3">
+        <DragScroll className="flex-1 overflow-y-auto p-3">
           {items.length === 0 ? (
             <div className="flex items-center justify-center h-full text-gray-300 text-sm">
               {t('pos.newOrder')}
@@ -229,7 +230,7 @@ export default function PosPage() {
               />
             ))
           )}
-        </div>
+        </DragScroll>
 
         {/* Totals & actions */}
         <div className="p-4 border-t border-gray-100 space-y-3">
