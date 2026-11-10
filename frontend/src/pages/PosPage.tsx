@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
@@ -78,6 +79,22 @@ export default function PosPage() {
   const [activeGroup, setActiveGroup] = useState<number | null>(null);
   const [showPay, setShowPay] = useState(false);
   const { items, orderId, clearOrder, setOrderId, setItems, subtotal } = usePosStore();
+  const [params, setParams] = useSearchParams();
+
+  // "?order=ID" (from the Z report) opens an existing unpaid order
+  useEffect(() => {
+    const id = Number(params.get('order'));
+    if (!id) return;
+    (async () => {
+      try {
+        const o: any = await ordersApi.get(id);
+        if (['open', 'sent'].includes(o.status)) { setOrderId(id); setItems(o.items); }
+        else toast.error(t('pos.orderClosed'));
+      } catch { toast.error(t('common.error')); }
+      setParams({}, { replace: true });
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const { data: groups = [] } = useQuery<MenuGroup[]>({
     queryKey: ['menu-groups'],

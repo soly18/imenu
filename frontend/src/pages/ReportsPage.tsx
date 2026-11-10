@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 import type { PaymentMethod } from '@imenu25/shared';
-import { eodApi } from '@/api';
+import { eodApi, ordersApi } from '@/api';
 import ReportView from '@/components/eod/ReportView';
 import { fmtDateTime, fmtMoney } from '@/utils/format';
 
@@ -142,6 +142,7 @@ export default function ReportsPage() {
   const lng = i18n.language;
   const qc = useQueryClient();
   const [params, setParams] = useSearchParams();
+  const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>((params.get('tab') as Tab) || 'x');
   const [confirmZ, setConfirmZ] = useState(params.get('run') === 'z');
   const [openZ, setOpenZ] = useState<number | null>(null);
@@ -238,12 +239,29 @@ export default function ReportsPage() {
                 <p className="text-sm text-gray-600 mb-3">{t('eod.zModal.blockedHelp')}</p>
                 <ul className="text-sm divide-y divide-gray-100 border border-gray-100 rounded-xl mb-5">
                   {st.openOrders.map((o) => (
-                    <li key={o.id} className="px-3 py-2 flex justify-between gap-3">
-                      <span>
-                        {o.tableLabel ? `${t('eod.table')} ${o.tableLabel}` : `${t('eod.order')} #${o.orderNumber.slice(-5)}`}
-                        <span className="text-gray-400"> · {o.employeeName}</span>
-                      </span>
-                      <span dir="ltr" className="tabular-nums">{fmtMoney(o.total, lng, t('common.currency'))}</span>
+                    <li key={o.id} className="px-3 py-2">
+                      <div className="flex justify-between gap-3">
+                        <span>
+                          {o.tableLabel ? `${t('eod.table')} ${o.tableLabel}` : `${t('eod.order')} #${o.orderNumber.slice(-5)}`}
+                          <span className="text-gray-400"> · {o.employeeName}</span>
+                        </span>
+                        <span dir="ltr" className="tabular-nums">{fmtMoney(o.total, lng, t('common.currency'))}</span>
+                      </div>
+                      <div className="flex gap-2 mt-2">
+                        <button onClick={() => navigate(`/pos?order=${o.id}`)}
+                          className="flex-1 px-3 py-1.5 rounded-lg bg-brand-500 text-white text-xs font-semibold">
+                          {t('eod.zModal.openOrder')}
+                        </button>
+                        <button
+                          onClick={async () => {
+                            if (!window.confirm(t('eod.zModal.cancelConfirm'))) return;
+                            try { await ordersApi.cancel(o.id); qc.invalidateQueries(); }
+                            catch { toast.error(t('common.error')); }
+                          }}
+                          className="px-3 py-1.5 rounded-lg bg-red-50 text-red-700 text-xs font-semibold">
+                          {t('eod.zModal.cancelOrder')}
+                        </button>
+                      </div>
                     </li>
                   ))}
                 </ul>

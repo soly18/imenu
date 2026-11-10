@@ -48,7 +48,8 @@
     "notes": "Notes",
     "choices": "Add-ons",
     "addToOrder": "Add to Order",
-    "selectCategory": "Select a category"
+    "selectCategory": "Select a category",
+    "orderClosed": "This order is already closed"
   },
   "backoffice": {
     "title": "Back Office",
@@ -175,7 +176,10 @@
       "missingDeclaration": "No cash declaration was entered for this period.",
       "blockedTitle": "Z cannot run yet",
       "blockedHelp": "These orders still contain items. Pay or cancel them first:",
-      "confirm": "Yes, run Z"
+      "confirm": "Yes, run Z",
+      "openOrder": "Open order",
+      "cancelOrder": "Cancel order",
+      "cancelConfirm": "Cancel this order? Its items will not be charged."
     },
     "zSuccess": "Z report #{{number}} created",
     "zBlocked": "Open orders with items must be paid or cancelled first",

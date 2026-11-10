@@ -43,6 +43,7 @@ export const ordersApi = {
     api.put(`/orders/${orderId}/items/${itemId}`, { quantity }).then(r => r.data),
   voidItem: (orderId: number, itemId: number, reason?: string) =>
     api.delete(`/orders/${orderId}/items/${itemId}`, { data: { reason } }).then(r => r.data),
+  cancel: (orderId: number) => api.post(`/orders/${orderId}/cancel`).then(r => r.data),
   sendToKitchen: (orderId: number) => api.post(`/orders/${orderId}/send`).then(r => r.data),
   pay: (orderId: number, payments: { method: string; amount: number; reference?: string }[]) =>
     api.post(`/orders/${orderId}/pay`, { payments }).then(r => r.data),

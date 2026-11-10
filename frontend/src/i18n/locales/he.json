@@ -48,7 +48,8 @@
     "notes": "הערות",
     "choices": "תוספות",
     "addToOrder": "הוסף להזמנה",
-    "selectCategory": "בחרו קטגוריה"
+    "selectCategory": "בחרו קטגוריה",
+    "orderClosed": "ההזמנה כבר סגורה"
   },
   "backoffice": {
     "title": "משרד אחורי",
@@ -175,7 +176,10 @@
       "missingDeclaration": "לא הוזנה הצהרת קופה לתקופה זו.",
       "blockedTitle": "לא ניתן להפיק Z כרגע",
       "blockedHelp": "בהזמנות אלה עדיין יש פריטים. יש לשלם או לבטל אותן תחילה:",
-      "confirm": "כן, הפק Z"
+      "confirm": "כן, הפק Z",
+      "openOrder": "פתח הזמנה",
+      "cancelOrder": "בטל הזמנה",
+      "cancelConfirm": "לבטל הזמנה זו? הפריטים לא יחויבו."
     },
     "zSuccess": "דוח Z מס' {{number}} הופק",
     "zBlocked": "יש לשלם או לבטל הזמנות פתוחות עם פריטים",

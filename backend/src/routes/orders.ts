@@ -1,6 +1,6 @@
 import { Router, Response } from 'express';
 import { pool } from '../db/connection';
-import { authenticate, AuthRequest } from '../middleware/auth';
+import { authenticate, requireRole, AuthRequest } from '../middleware/auth';
 
 const router = Router();
 
@@ -269,5 +269,30 @@ async function recalcOrder(orderId: string | number) {
     [subtotal, discount, vat, total, orderId]
   );
 }
+
+
+// POST /api/orders/:id/cancel — manager/admin cancels an unpaid open order (e.g. one blocking a Z)
+router.post('/:id/cancel', authenticate, requireRole('admin', 'manager'), async (req: AuthRequest, res: Response) => {
+  const branchId = req.user!.branchId;
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
+    await conn.execute('SELECT id FROM branches WHERE id = ? LOCK IN SHARE MODE', [branchId]);
+    const [r]: any = await conn.execute(
+      `UPDATE orders SET status = 'cancelled', closed_at = NOW()
+       WHERE id = ? AND branch_id = ? AND status IN ('open','sent')`,
+      [req.params.id, branchId]
+    );
+    if (!r.affectedRows) { await conn.rollback(); return res.status(409).json(CLOSED); }
+    await conn.commit();
+    return res.json({ success: true });
+  } catch (e) {
+    await conn.rollback();
+    console.error(e);
+    return res.status(500).json({ error: 'Cancel failed' });
+  } finally {
+    conn.release();
+  }
+});
 
 export default router;
