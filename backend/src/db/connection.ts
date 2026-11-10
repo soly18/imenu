@@ -17,6 +17,12 @@ export const pool = mysql.createPool({
   decimalNumbers: true, // return DECIMAL as numbers, not strings
 });
 
+// Make NOW() / CURRENT_TIMESTAMP agree with the driver's '+00:00' setting, so stored times are
+// real UTC instants and report periods display correctly in any time zone.
+(pool as any).pool.on('connection', (conn: any) => {
+  conn.query("SET time_zone = '+00:00'", () => {});
+});
+
 export async function testConnection(): Promise<void> {
   const conn = await pool.getConnection();
   await conn.ping();

@@ -6,6 +6,7 @@ import LoginPage      from '@/pages/LoginPage';
 import DashboardPage  from '@/pages/DashboardPage';
 import PosPage        from '@/pages/PosPage';
 import BackOfficePage from '@/pages/BackOfficePage';
+import ReportsPage    from '@/pages/ReportsPage';
 import AppLayout      from '@/components/layout/AppLayout';
 import ProtectedRoute from '@/components/common/ProtectedRoute';
 
@@ -32,6 +33,9 @@ export default function App() {
                   <Routes>
                     <Route path="/dashboard"  element={<DashboardPage />} />
                     <Route path="/pos"        element={<PosPage />} />
+                    <Route path="/reports"    element={
+                      <ProtectedRoute roles={['admin', 'manager']}><ReportsPage /></ProtectedRoute>
+                    } />
                     <Route path="/backoffice" element={<BackOfficePage />} />
                     <Route path="*"           element={<Navigate to="/dashboard" replace />} />
                   </Routes>

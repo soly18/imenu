@@ -1,10 +1,13 @@
 {
-  "app": { "name": "iMenu25" },
+  "app": {
+    "name": "iMenu25"
+  },
   "nav": {
     "dashboard": "Dashboard",
     "pos": "POS",
     "backoffice": "Back Office",
-    "logout": "Logout"
+    "logout": "Logout",
+    "reports": "Reports"
   },
   "auth": {
     "enterPin": "Enter PIN",
@@ -17,7 +20,7 @@
     "title": "Dashboard",
     "openTables": "Open Tables",
     "activeOrders": "Active Orders",
-    "revenueToday": "Revenue Today",
+    "revenueToday": "Sales since last Z",
     "avgCheck": "Avg Check",
     "clockedIn": "Clocked In",
     "clockIn": "Clock In",
@@ -44,7 +47,8 @@
     "quantity": "Qty",
     "notes": "Notes",
     "choices": "Add-ons",
-    "addToOrder": "Add to Order"
+    "addToOrder": "Add to Order",
+    "selectCategory": "Select a category"
   },
   "backoffice": {
     "title": "Back Office",
@@ -56,7 +60,8 @@
     "reports": "Reports",
     "settings": "Settings",
     "members": "Members",
-    "printers": "Printers"
+    "printers": "Printers",
+    "comingSoon": "Coming soon"
   },
   "common": {
     "save": "Save",
@@ -80,5 +85,106 @@
     "date": "Date",
     "time": "Time",
     "currency": "₪"
+  },
+  "payments": {
+    "cash": "Cash",
+    "credit_card": "Credit card",
+    "cheque": "Cheque",
+    "voucher": "Voucher",
+    "tab_client": "Customer tab",
+    "member_points": "Member points",
+    "gift_card": "Gift card"
+  },
+  "eod": {
+    "title": "End of day reports",
+    "xReport": "X report (current period)",
+    "zReport": "Z report #{{number}}",
+    "tabX": "X report",
+    "tabDeclaration": "Cash declaration",
+    "tabHistory": "Z history",
+    "from": "From",
+    "to": "to",
+    "generatedBy": "Prepared by",
+    "print": "Print",
+    "runZ": "Run Z report",
+    "periodStarted": "Period started",
+    "lastZ": "Last Z",
+    "noZYet": "No Z report yet",
+    "openOrdersBlock": "Open orders with items: {{count}} — pay or cancel them before running Z",
+    "summary": {
+      "gross": "Gross sales",
+      "discounts": "Discounts",
+      "net": "Net sales",
+      "vat": "VAT included",
+      "orders": "Orders",
+      "guests": "Guests",
+      "avgCheck": "Average check",
+      "voids": "Voided items"
+    },
+    "sections": {
+      "byPayment": "Sales by payment method",
+      "byGroup": "Sales by category",
+      "byEmployee": "Sales by employee",
+      "discounts": "Discounts",
+      "vat": "VAT by rate",
+      "voids": "Voided items",
+      "declarations": "Cash declaration vs. expected"
+    },
+    "cols": {
+      "method": "Method",
+      "count": "Count",
+      "amount": "Amount",
+      "category": "Category",
+      "quantity": "Qty",
+      "employee": "Employee",
+      "orders": "Orders",
+      "rate": "Rate",
+      "base": "Before VAT",
+      "vat": "VAT",
+      "gross": "Gross",
+      "reason": "Reason",
+      "label": "Discount",
+      "expected": "Expected",
+      "declared": "Declared",
+      "difference": "Difference",
+      "total": "Total",
+      "number": "No.",
+      "closedAt": "Closed",
+      "net": "Net sales",
+      "cashDiff": "Cash difference"
+    },
+    "declaration": {
+      "title": "Cash declaration",
+      "hint": "Count what is in the till for each method and enter the amounts. The expected amounts are not shown here so the count stays independent — they appear in the X report.",
+      "save": "Save declaration",
+      "saved": "Declaration saved",
+      "notDeclared": "Not declared"
+    },
+    "declarationsMissing": "No declaration was entered for this period.",
+    "voidReasonNone": "(no reason given)",
+    "history": {
+      "empty": "No Z reports yet",
+      "back": "Back to list",
+      "view": "View"
+    },
+    "zModal": {
+      "title": "Run Z report?",
+      "warning": "This closes the current period and cannot be undone. The totals are frozen in a numbered report and the next period starts from zero.",
+      "willCancel": "Empty open orders that will be cancelled: {{count}}",
+      "willClockOut": "Still clocked in, will be clocked out: {{names}}",
+      "missingDeclaration": "No cash declaration was entered for this period.",
+      "blockedTitle": "Z cannot run yet",
+      "blockedHelp": "These orders still contain items. Pay or cancel them first:",
+      "confirm": "Yes, run Z"
+    },
+    "zSuccess": "Z report #{{number}} created",
+    "zBlocked": "Open orders with items must be paid or cancelled first",
+    "zJustRun": "A Z report was just run — wait a few seconds",
+    "zActions": "What the Z did",
+    "autoClockedOut": "Clocked out by Z",
+    "autoCancelled": "Empty orders cancelled by Z",
+    "noData": "No data in this period",
+    "table": "Table",
+    "order": "Order"
   }
 }

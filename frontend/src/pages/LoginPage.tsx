@@ -68,7 +68,7 @@ export default function LoginPage() {
               disabled={loading}
               className={`pin-key ${
                 key === 'OK'
-                  ? 'bg-brand-500 text-white hover:bg-brand-600 col-span-1'
+                  ? '!bg-brand-500 !text-white hover:!bg-brand-600 col-span-1'
                   : key === 'DEL'
                   ? 'bg-gray-100 text-gray-600 text-base'
                   : 'bg-white text-gray-800'

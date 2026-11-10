@@ -1,5 +1,8 @@
 import api from './client';
-import type { LoginRequest, LoginResponse, DashboardKPIs, MenuGroup, MenuItem, Order } from '@imenu25/shared';
+import type {
+  LoginRequest, LoginResponse, DashboardKPIs, MenuGroup, MenuItem, Order,
+  PaymentMethod, EodReport, EodStatus, ZReportListItem,
+} from '@imenu25/shared';
 
 // ── Auth ──────────────────────────────────────────────────────
 export const authApi = {
@@ -51,4 +54,18 @@ export const employeesApi = {
   create: (data: any) => api.post('/employees', data).then(r => r.data),
   update: (id: number, data: any) => api.put(`/employees/${id}`, data).then(r => r.data),
   clockHistory: (id: number) => api.get(`/employees/${id}/clock-history`).then(r => r.data),
+};
+
+// ── End of day (X / Z reports) ────────────────────────────────
+export const eodApi = {
+  status: () => api.get<EodStatus>('/eod/status').then(r => r.data),
+  x: () => api.get<EodReport>('/eod/x').then(r => r.data),
+  declaration: () =>
+    api.get<{ methods: PaymentMethod[]; declarations: { method: PaymentMethod; amount: number }[] }>(
+      '/eod/declaration').then(r => r.data),
+  saveDeclaration: (declarations: { method: PaymentMethod; amount: number | null }[]) =>
+    api.post('/eod/declaration', { declarations }).then(r => r.data),
+  runZ: () => api.post<{ id: number; report: EodReport }>('/eod/z').then(r => r.data),
+  zList: () => api.get<ZReportListItem[]>('/eod/z').then(r => r.data),
+  zGet: (id: number) => api.get<{ id: number; report: EodReport }>(`/eod/z/${id}`).then(r => r.data),
 };

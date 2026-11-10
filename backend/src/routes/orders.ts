@@ -1,8 +1,25 @@
 import { Router, Response } from 'express';
 import { pool } from '../db/connection';
-import { authenticate, requireRole, AuthRequest } from '../middleware/auth';
+import { authenticate, AuthRequest } from '../middleware/auth';
 
 const router = Router();
+
+const PAYMENT_METHODS = [
+  'cash', 'credit_card', 'cheque', 'voucher', 'tab_client', 'member_points', 'gift_card',
+];
+
+const round2 = (n: number) => Math.round((n + Number.EPSILON) * 100) / 100;
+
+/** True when the order exists in this branch and can still be changed. */
+async function isOpenOrder(orderId: string | number, branchId: number): Promise<boolean> {
+  const [rows]: any = await pool.execute(
+    `SELECT id FROM orders WHERE id = ? AND branch_id = ? AND status IN ('open','sent')`,
+    [orderId, branchId]
+  );
+  return rows.length > 0;
+}
+
+const CLOSED = { error: 'Order not found or already closed' };
 
 // GET /api/orders?status=open
 router.get('/', authenticate, async (req: AuthRequest, res: Response) => {
@@ -72,25 +89,40 @@ router.post('/', authenticate, async (req: AuthRequest, res: Response) => {
   return res.status(201).json({ id: result.insertId, orderNumber });
 });
 
-// POST /api/orders/:id/items
+// POST /api/orders/:id/items   (the price always comes from the menu, never from the browser)
 router.post('/:id/items', authenticate, async (req: AuthRequest, res: Response) => {
-  const { menuItemId, quantity, unitPrice, choices, notes } = req.body;
-  const totalPrice = unitPrice * quantity;
+  if (!(await isOpenOrder(req.params.id, req.user!.branchId))) return res.status(409).json(CLOSED);
+
+  const { menuItemId, choices, notes } = req.body;
+  const quantity = Number(req.body.quantity ?? 1);
+  if (!(quantity > 0)) return res.status(400).json({ error: 'Quantity must be positive' });
+
+  const [menu]: any = await pool.execute(
+    `SELECT mi.id, mi.name_primary, mi.name_secondary, mi.price
+     FROM menu_items mi JOIN menu_groups mg ON mg.id = mi.group_id
+     WHERE mi.id = ? AND mi.is_active = 1 AND mg.branch_id = ?`,
+    [menuItemId, req.user!.branchId]
+  );
+  if (!menu.length) return res.status(404).json({ error: 'Menu item not found' });
+  const m = menu[0];
 
   const [itemRes]: any = await pool.execute(
     `INSERT INTO order_items (order_id, menu_item_id, name_primary, name_secondary, quantity, unit_price, total_price, notes)
-     SELECT ?, mi.id, mi.name_primary, mi.name_secondary, ?, ?, ?, ?
-     FROM menu_items mi WHERE mi.id = ?`,
-    [req.params.id, quantity, unitPrice, totalPrice, notes || null, menuItemId]
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    [req.params.id, m.id, m.name_primary, m.name_secondary, quantity, m.price,
+     round2(Number(m.price) * quantity), notes || null]
   );
   const orderItemId = itemRes.insertId;
 
-  if (choices?.length) {
-    for (const c of choices) {
+  for (const c of Array.isArray(choices) ? choices : []) {
+    const [rows]: any = await pool.execute(
+      `SELECT id, name_primary, extra_price FROM menu_choices WHERE id = ? AND item_id = ? AND is_active = 1`,
+      [c.choiceId, m.id]
+    );
+    if (rows.length) {
       await pool.execute(
-        `INSERT INTO order_item_choices (order_item_id, choice_id, name_primary, extra_price)
-         VALUES (?, ?, ?, ?)`,
-        [orderItemId, c.choiceId, c.namePrimary, c.extraPrice || 0]
+        `INSERT INTO order_item_choices (order_item_id, choice_id, name_primary, extra_price) VALUES (?, ?, ?, ?)`,
+        [orderItemId, rows[0].id, rows[0].name_primary, rows[0].extra_price]
       );
     }
   }
@@ -101,10 +133,12 @@ router.post('/:id/items', authenticate, async (req: AuthRequest, res: Response) 
 
 // PUT /api/orders/:id/items/:itemId  (change quantity)
 router.put('/:id/items/:itemId', authenticate, async (req: AuthRequest, res: Response) => {
+  if (!(await isOpenOrder(req.params.id, req.user!.branchId))) return res.status(409).json(CLOSED);
   const quantity = Number(req.body.quantity);
   if (!(quantity > 0)) return res.status(400).json({ error: 'Quantity must be positive' });
   await pool.execute(
-    `UPDATE order_items SET quantity=?, total_price=unit_price*? WHERE id=? AND order_id=?`,
+    `UPDATE order_items SET quantity = ?, total_price = ROUND(unit_price * ?, 2)
+     WHERE id = ? AND order_id = ? AND is_voided = 0`,
     [quantity, quantity, req.params.itemId, req.params.id]
   );
   await recalcOrder(req.params.id);
@@ -113,9 +147,11 @@ router.put('/:id/items/:itemId', authenticate, async (req: AuthRequest, res: Res
 
 // DELETE /api/orders/:id/items/:itemId  (void item)
 router.delete('/:id/items/:itemId', authenticate, async (req: AuthRequest, res: Response) => {
-  const { reason } = req.body;
+  if (!(await isOpenOrder(req.params.id, req.user!.branchId))) return res.status(409).json(CLOSED);
+  const { reason } = req.body || {};
   await pool.execute(
-    `UPDATE order_items SET is_voided=1, void_reason=?, void_by=? WHERE id=? AND order_id=?`,
+    `UPDATE order_items SET is_voided = 1, void_reason = ?, void_by = ?, voided_at = NOW()
+     WHERE id = ? AND order_id = ? AND is_voided = 0`,
     [reason || 'voided', req.user!.employeeId, req.params.itemId, req.params.id]
   );
   await recalcOrder(req.params.id);
@@ -124,68 +160,113 @@ router.delete('/:id/items/:itemId', authenticate, async (req: AuthRequest, res: 
 
 // POST /api/orders/:id/send  (send to kitchen)
 router.post('/:id/send', authenticate, async (req: AuthRequest, res: Response) => {
+  if (!(await isOpenOrder(req.params.id, req.user!.branchId))) return res.status(409).json(CLOSED);
   await pool.execute(
-    `UPDATE order_items SET sent_to_kitchen=1, sent_at=NOW()
-     WHERE order_id=? AND sent_to_kitchen=0 AND is_voided=0`,
+    `UPDATE order_items SET sent_to_kitchen = 1, sent_at = NOW()
+     WHERE order_id = ? AND sent_to_kitchen = 0 AND is_voided = 0`,
     [req.params.id]
   );
-  await pool.execute(`UPDATE orders SET status='sent', sent_at=NOW() WHERE id=?`, [req.params.id]);
+  await pool.execute(`UPDATE orders SET status = 'sent', sent_at = NOW() WHERE id = ?`, [req.params.id]);
   return res.json({ success: true });
 });
 
 // POST /api/orders/:id/pay
 router.post('/:id/pay', authenticate, async (req: AuthRequest, res: Response) => {
   const { payments } = req.body; // [{ method, amount, reference }]
+  if (!Array.isArray(payments) || !payments.length) {
+    return res.status(400).json({ error: 'No payments given' });
+  }
+
+  const branchId = req.user!.branchId;
   const conn = await pool.getConnection();
   try {
     await conn.beginTransaction();
+
+    // Shared lock on the branch row: an end-of-day Z (which takes it exclusively)
+    // can never run half-way through a payment.
+    await conn.execute('SELECT id FROM branches WHERE id = ? LOCK IN SHARE MODE', [branchId]);
+
+    const [orders]: any = await conn.execute(
+      'SELECT id, total, status FROM orders WHERE id = ? AND branch_id = ? FOR UPDATE',
+      [req.params.id, branchId]
+    );
+    if (!orders.length || !['open', 'sent'].includes(orders[0].status)) {
+      await conn.rollback();
+      return res.status(409).json(CLOSED);
+    }
+
+    const total = Number(orders[0].total);
+    if (!(total > 0)) {
+      await conn.rollback();
+      return res.status(400).json({ error: 'Nothing to pay' });
+    }
+
+    let paid = 0;
+    for (const p of payments) {
+      const amount = Number(p.amount);
+      if (!PAYMENT_METHODS.includes(p.method) || !(amount > 0)) {
+        await conn.rollback();
+        return res.status(400).json({ error: 'Invalid payment' });
+      }
+      paid += amount;
+    }
+    if (Math.abs(paid - total) > 0.009) {
+      await conn.rollback();
+      return res.status(400).json({ error: 'Payments must add up to the order total', total });
+    }
+
     for (const p of payments) {
       await conn.execute(
-        `INSERT INTO payments (order_id, method, amount, reference, processed_by)
-         VALUES (?, ?, ?, ?, ?)`,
-        [req.params.id, p.method, p.amount, p.reference || null, req.user!.employeeId]
+        `INSERT INTO payments (order_id, method, amount, reference, processed_by) VALUES (?, ?, ?, ?, ?)`,
+        [req.params.id, p.method, round2(Number(p.amount)), p.reference || null, req.user!.employeeId]
       );
     }
-    await conn.execute(
-      `UPDATE orders SET status='paid', closed_at=NOW() WHERE id=?`,
-      [req.params.id]
-    );
+    await conn.execute(`UPDATE orders SET status = 'paid', closed_at = NOW() WHERE id = ?`, [req.params.id]);
     await conn.commit();
     return res.json({ success: true });
   } catch (err) {
     await conn.rollback();
-    throw err;
+    console.error('Payment failed:', err);
+    return res.status(500).json({ error: 'Payment failed' });
   } finally {
     conn.release();
   }
 });
 
-// Recalculate order totals (prices are VAT-inclusive)
+/**
+ * Recalculate order totals. Prices include VAT: VAT is extracted per item using that
+ * item's own rate, then scaled down by any order-level discount.
+ */
 async function recalcOrder(orderId: string | number) {
-  const [[items]]: any = await pool.execute(
-    `SELECT COALESCE(SUM(total_price), 0) AS itemsTotal
-     FROM order_items WHERE order_id = ? AND is_voided = 0`,
-    [orderId]
-  );
-  const [[extras]]: any = await pool.execute(
-    `SELECT COALESCE(SUM(oic.extra_price * oi.quantity), 0) AS extrasTotal
-     FROM order_item_choices oic
-     JOIN order_items oi ON oi.id = oic.order_item_id
+  const [[sums]]: any = await pool.execute(
+    `SELECT COALESCE(SUM(oi.total_price + COALESCE(ex.extras, 0) * oi.quantity), 0) AS subtotal,
+            COALESCE(SUM((oi.total_price + COALESCE(ex.extras, 0) * oi.quantity)
+                         * mi.vat_rate / (100 + mi.vat_rate)), 0) AS vatIncluded
+     FROM order_items oi
+     JOIN menu_items mi ON mi.id = oi.menu_item_id
+     LEFT JOIN (SELECT order_item_id, SUM(extra_price) AS extras
+                FROM order_item_choices GROUP BY order_item_id) ex ON ex.order_item_id = oi.id
      WHERE oi.order_id = ? AND oi.is_voided = 0`,
     [orderId]
   );
-  const [[disc]]: any = await pool.execute(
-    `SELECT COALESCE(SUM(CASE WHEN type='percent' THEN 0 ELSE value END), 0) AS fixedTotal
-     FROM order_discounts WHERE order_id = ?`,
-    [orderId]
+  const subtotal = round2(Number(sums.subtotal));
+
+  const [discs]: any = await pool.execute(
+    'SELECT type, value FROM order_discounts WHERE order_id = ?', [orderId]
   );
-  const subtotal = Number(items.itemsTotal) + Number(extras.extrasTotal);
-  const discountTotal = Math.min(Number(disc.fixedTotal), subtotal);
-  const total = subtotal - discountTotal;
-  const vatTotal = total * 0.17 / 1.17; // extract VAT from price-inclusive total
+  let discount = 0;
+  for (const d of discs) {
+    // 'percent' is a percentage of the subtotal; 'fixed' and 'preset' are amounts
+    discount += d.type === 'percent' ? subtotal * Number(d.value) / 100 : Number(d.value);
+  }
+  discount = round2(Math.min(discount, subtotal));
+
+  const total = round2(subtotal - discount);
+  const vat = subtotal > 0 ? round2(Number(sums.vatIncluded) * (total / subtotal)) : 0;
+
   await pool.execute(
-    `UPDATE orders SET subtotal=?, discount_total=?, vat_total=?, total=? WHERE id=?`,
-    [subtotal, discountTotal, vatTotal, total, orderId]
+    `UPDATE orders SET subtotal = ?, discount_total = ?, vat_total = ?, total = ? WHERE id = ?`,
+    [subtotal, discount, vat, total, orderId]
   );
 }
 

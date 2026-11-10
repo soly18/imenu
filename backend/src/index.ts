@@ -12,6 +12,7 @@ import menuRoutes      from './routes/menu';
 import ordersRoutes    from './routes/orders';
 import dashboardRoutes from './routes/dashboard';
 import employeeRoutes  from './routes/employees';
+import eodRoutes       from './routes/eod';
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ app.use('/api/menu',      menuRoutes);
 app.use('/api/orders',    ordersRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/employees', employeeRoutes);
+app.use('/api/eod',       eodRoutes);
 
 // Health check
 app.get('/health', (_, res) => res.json({ status: 'ok', ts: new Date().toISOString() }));

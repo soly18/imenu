@@ -17,10 +17,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     toast.success(t('nav.logout'));
   };
 
+  const isManager = employee?.role === 'admin' || employee?.role === 'manager';
   const navItems = [
     { to: '/dashboard', label: t('nav.dashboard'), icon: '📊' },
     { to: '/pos',       label: t('nav.pos'),       icon: '🛒' },
-    { to: '/backoffice',label: t('nav.backoffice'), icon: '⚙️' },
+    ...(isManager ? [{ to: '/reports', label: t('nav.reports'), icon: '🧾' }] : []),
+    { to: '/backoffice', label: t('nav.backoffice'), icon: '⚙️' },
   ];
 
   return (

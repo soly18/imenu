@@ -192,6 +192,7 @@ const migrations: string[] = [
     is_voided       BOOLEAN DEFAULT FALSE,
     void_reason     VARCHAR(255),
     void_by         INT,
+    voided_at       DATETIME,
     sent_to_kitchen BOOLEAN DEFAULT FALSE,
     sent_at         DATETIME,
     created_at      DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -297,26 +298,64 @@ const migrations: string[] = [
     FOREIGN KEY (generated_by) REFERENCES employees(id)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
 
-  // ── Cash declarations ────────────────────────────────────────────────────
-  `CREATE TABLE IF NOT EXISTS cash_declarations (
+  // ── Cash declarations (per payment method, like the Delphi XDeclaration screen) ──────
+  // Rows with z_report_id NULL are "pending": entered during the current period and
+  // attached to the next Z report when it is run.
+  `CREATE TABLE IF NOT EXISTS declarations (
     id              INT AUTO_INCREMENT PRIMARY KEY,
     branch_id       INT NOT NULL,
-    employee_id     INT NOT NULL,
-    declaration_type ENUM('x_report','z_report','shift_open') NOT NULL,
-    c_5             INT DEFAULT 0,
-    c_10            INT DEFAULT 0,
-    c_50            INT DEFAULT 0,
-    c_100           INT DEFAULT 0,
-    c_200           INT DEFAULT 0,
-    c_1             INT DEFAULT 0,
-    c_2             INT DEFAULT 0,
-    total_declared  DECIMAL(10,2) DEFAULT 0,
+    z_report_id     INT NULL,
+    method          ENUM('cash','credit_card','cheque','voucher','gift_card') NOT NULL,
+    amount          DECIMAL(12,2) NOT NULL,
+    declared_by     INT NOT NULL,
     declared_at     DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (branch_id)   REFERENCES branches(id),
-    FOREIGN KEY (employee_id) REFERENCES employees(id)
+    FOREIGN KEY (z_report_id) REFERENCES z_reports(id),
+    FOREIGN KEY (declared_by) REFERENCES employees(id)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
 
 ];
+
+async function columnExists(conn: any, table: string, column: string): Promise<boolean> {
+  const [rows]: any = await conn.execute(
+    `SELECT 1 FROM information_schema.COLUMNS
+     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?`,
+    [table, column]
+  );
+  return rows.length > 0;
+}
+
+/** Changes for databases that were created by an earlier version of this script. */
+async function upgrades(conn: any) {
+  if (!(await columnExists(conn, 'order_items', 'voided_at'))) {
+    await conn.execute('ALTER TABLE order_items ADD COLUMN voided_at DATETIME NULL AFTER void_by');
+    console.log('  ↑ order_items.voided_at added');
+  }
+  // Each paid order and voided item is "claimed" by the Z report that covers it.
+  // A period is everything not yet claimed, so no sale can be missed or counted twice.
+  for (const table of ['orders', 'order_items']) {
+    if (!(await columnExists(conn, table, 'z_report_id'))) {
+      await conn.execute(
+        `ALTER TABLE ${table}
+           ADD COLUMN z_report_id INT NULL,
+           ADD INDEX idx_${table}_z_report (z_report_id),
+           ADD CONSTRAINT fk_${table}_z_report FOREIGN KEY (z_report_id) REFERENCES z_reports(id)`
+      );
+      console.log(`  ↑ ${table}.z_report_id added`);
+    }
+  }
+  // The old per-denomination table was never used by any code; drop it only if it is empty.
+  const [t]: any = await conn.execute(
+    `SELECT 1 FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'cash_declarations'`
+  );
+  if (t.length) {
+    const [[c]]: any = await conn.execute('SELECT COUNT(*) AS n FROM cash_declarations');
+    if (Number(c.n) === 0) {
+      await conn.execute('DROP TABLE cash_declarations');
+      console.log('  ↑ unused empty table cash_declarations removed');
+    }
+  }
+}
 
 async function migrate() {
   console.log('🚀 Starting migration...');
@@ -327,6 +366,7 @@ async function migrate() {
       await conn.execute(sql);
       console.log(`  ✓ ${tableName}`);
     }
+    await upgrades(conn);
     console.log('✅ Migration complete!');
   } catch (err) {
     console.error('❌ Migration failed:', err);

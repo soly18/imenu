@@ -205,3 +205,70 @@ export interface ZReport {
   cashExpected: number;
   cashDifference: number;
 }
+
+// ── X / Z end-of-day reports ──────────────────
+export interface EodSummary {
+  orders: number;
+  guests: number;
+  gross: number;       // item total before discounts (VAT included)
+  discounts: number;
+  net: number;         // gross - discounts = what was actually charged
+  vat: number;         // VAT contained in net
+  avgCheck: number;
+  voidsCount: number;
+  voidsTotal: number;
+}
+export interface EodPaymentRow { method: PaymentMethod; count: number; amount: number; }
+export interface EodGroupRow {
+  groupId: number; namePrimary: string; nameSecondary: string | null;
+  quantity: number; amount: number;
+}
+export interface EodEmployeeRow { employeeId: number; name: string; orders: number; amount: number; }
+export interface EodDiscountRow { label: string; type: string; count: number; amount: number; }
+export interface EodVatRow { rate: number; gross: number; base: number; vat: number; }
+export interface EodVoidRow { reason: string | null; employeeName: string | null; count: number; amount: number; }
+export interface EodDeclarationRow {
+  method: PaymentMethod;
+  expected: number;
+  declared: number | null;     // null = nobody declared this method
+  difference: number | null;   // declared - expected
+}
+export interface EodReport {
+  kind: 'X' | 'Z';
+  reportNumber: number | null; // only Z reports are numbered
+  branchName: string;
+  periodStart: string;         // ISO, inclusive
+  periodEnd: string;           // ISO, exclusive
+  generatedAt: string;
+  generatedBy: string;
+  summary: EodSummary;
+  byPayment: EodPaymentRow[];
+  byGroup: EodGroupRow[];
+  byEmployee: EodEmployeeRow[];
+  discounts: EodDiscountRow[];
+  vat: EodVatRow[];
+  voids: EodVoidRow[];
+  declarations: EodDeclarationRow[];
+  declarationsEntered: boolean;
+  autoClockedOut: string[];    // Z only: employees clocked out by the Z
+  autoCancelledOrders: number; // Z only: empty open orders cancelled by the Z
+}
+export interface EodOpenOrder {
+  id: number; orderNumber: string; tableLabel: string | null;
+  employeeName: string; total: number;
+}
+export interface EodStatus {
+  periodStart: string;
+  lastZ: { id: number; reportNumber: number; closedAt: string } | null;
+  openOrders: EodOpenOrder[];  // open orders WITH items: these block a Z
+  emptyOpenOrders: number;     // empty open orders: a Z cancels them
+  clockedIn: string[];         // a Z clocks these employees out
+  isZRunnable: boolean;
+}
+export interface ZReportListItem {
+  id: number; reportNumber: number;
+  periodStart: string; periodEnd: string;
+  net: number; discounts: number; vat: number;
+  cashDifference: number | null;
+  generatedBy: string; generatedAt: string;
+}

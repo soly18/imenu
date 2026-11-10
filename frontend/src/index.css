@@ -52,5 +52,9 @@ body {
 
 /* ── Print ─────────────────────────────────────────────────── */
 @media print {
-  nav, .no-print { display: none !important; }
+  header, nav, .no-print { display: none !important; }
+  body { background: white; }
 }
+
+/* Arabic needs a font with Arabic glyphs */
+html[lang='ar'] body { font-family: 'Noto Sans Arabic', 'Heebo', system-ui, sans-serif; }

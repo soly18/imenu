@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
@@ -17,6 +18,7 @@ function KPICard({ label, value, sub, color }: { label: string; value: string | 
 export default function DashboardPage() {
   const { t } = useTranslation();
   const employee = useAuthStore((s) => s.employee);
+  const navigate = useNavigate();
 
   const { data: kpis, isLoading } = useQuery({
     queryKey: ['kpis'],
@@ -97,15 +99,23 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Report shortcuts */}
-      <div className="grid grid-cols-2 gap-4">
-        <button className="pos-btn bg-blue-50 text-blue-700 border border-blue-200 h-16 text-base hover:bg-blue-100">
-          📊 {t('dashboard.xReport')}
-        </button>
-        <button className="pos-btn bg-purple-50 text-purple-700 border border-purple-200 h-16 text-base hover:bg-purple-100">
-          📋 {t('dashboard.zReport')}
-        </button>
-      </div>
+      {/* Report shortcuts (managers only) */}
+      {(employee?.role === 'admin' || employee?.role === 'manager') && (
+        <div className="grid grid-cols-2 gap-4">
+          <button
+            onClick={() => navigate('/reports')}
+            className="pos-btn bg-blue-50 text-blue-700 border border-blue-200 h-16 text-base hover:bg-blue-100"
+          >
+            📊 {t('dashboard.xReport')}
+          </button>
+          <button
+            onClick={() => navigate('/reports?run=z')}
+            className="pos-btn bg-purple-50 text-purple-700 border border-purple-200 h-16 text-base hover:bg-purple-100"
+          >
+            📋 {t('dashboard.zReport')}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

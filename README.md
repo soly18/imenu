@@ -38,9 +38,16 @@ imenu25/
 - POS: pick category, add items, change quantity, void, send to kitchen, pay (cash/card)
 - Server is the source of truth for order totals
 
+## End-of-day reports (X / Z)
+- **X** = live read-only report for the current period; **Z** = frozen, numbered snapshot (Reports page, admin/manager).
+- A period = paid orders and voided items not yet claimed by a Z (`z_report_id IS NULL`), no timestamp math.
+- Z is blocked while orders with items are open; empty open orders are cancelled and clocked-in staff are clocked out automatically.
+- Cash declaration is per payment method (blind count), attached to the next Z.
+- **Upgrading an existing DB:** after `git pull`, run `npm run migrate` in `backend/` (adds `declarations`, `voided_at`, `z_report_id`), then restart `npm run dev`.
+
 ## Not built yet
-- Back Office screens (shell only), X/Z reports, combo/pizza modals, split bill and the other payment methods, discounts UI, printing
-- Arabic and Russian translations are English placeholders (`frontend/src/i18n/locales/ar.json`, `ru.json`)
+- Back Office screens (shell only), combo/pizza modals, split-bill UI, discounts UI, thermal printing, PDF/Excel export of reports (browser print only), per-shift/employee X filter, tips/service charge/invoices/multi-currency
+- Import of legacy MySQL 5.5 iMenu data
 - Tests
 
 ## Languages

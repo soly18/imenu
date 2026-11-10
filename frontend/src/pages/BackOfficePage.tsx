@@ -47,7 +47,7 @@ export default function BackOfficePage() {
             {SECTIONS.find(s => s.key === active)?.icon}
           </div>
           <p className="text-lg font-medium">{t(`backoffice.${active}`)}</p>
-          <p className="text-sm mt-2">Module coming soon — specs documented in Module 3</p>
+          <p className="text-sm mt-2">{t('backoffice.comingSoon')}</p>
         </div>
       </main>
     </div>

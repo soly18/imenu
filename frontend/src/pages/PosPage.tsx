@@ -167,7 +167,7 @@ export default function PosPage() {
             <div className="flex items-center justify-center h-full text-gray-400">
               <div className="text-center">
                 <div className="text-5xl mb-3">☝️</div>
-                <p>Select a category</p>
+                <p>{t('pos.selectCategory')}</p>
               </div>
             </div>
           ) : (

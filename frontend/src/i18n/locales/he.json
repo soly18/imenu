@@ -1,10 +1,13 @@
 {
-  "app": { "name": "iMenu25" },
+  "app": {
+    "name": "iMenu25"
+  },
   "nav": {
     "dashboard": "לוח בקרה",
     "pos": "קופה",
     "backoffice": "משרד אחורי",
-    "logout": "התנתק"
+    "logout": "התנתק",
+    "reports": "דוחות"
   },
   "auth": {
     "enterPin": "הכנס PIN",
@@ -17,7 +20,7 @@
     "title": "לוח בקרה",
     "openTables": "שולחנות פתוחים",
     "activeOrders": "הזמנות פעילות",
-    "revenueToday": "הכנסות היום",
+    "revenueToday": "מכירות מאז Z אחרון",
     "avgCheck": "ממוצע חשבון",
     "clockedIn": "עובדים נוכחים",
     "clockIn": "כניסה לעבודה",
@@ -44,7 +47,8 @@
     "quantity": "כמות",
     "notes": "הערות",
     "choices": "תוספות",
-    "addToOrder": "הוסף להזמנה"
+    "addToOrder": "הוסף להזמנה",
+    "selectCategory": "בחרו קטגוריה"
   },
   "backoffice": {
     "title": "משרד אחורי",
@@ -56,7 +60,8 @@
     "reports": "דוחות",
     "settings": "הגדרות",
     "members": "חברים",
-    "printers": "מדפסות"
+    "printers": "מדפסות",
+    "comingSoon": "בקרוב"
   },
   "common": {
     "save": "שמור",
@@ -80,5 +85,106 @@
     "date": "תאריך",
     "time": "שעה",
     "currency": "₪"
+  },
+  "payments": {
+    "cash": "מזומן",
+    "credit_card": "כרטיס אשראי",
+    "cheque": "המחאה",
+    "voucher": "שובר",
+    "tab_client": "הקפה",
+    "member_points": "נקודות מועדון",
+    "gift_card": "כרטיס מתנה"
+  },
+  "eod": {
+    "title": "דוחות סוף יום",
+    "xReport": "דוח X (תקופה נוכחית)",
+    "zReport": "דוח Z מס' {{number}}",
+    "tabX": "דוח X",
+    "tabDeclaration": "הצהרת קופה",
+    "tabHistory": "היסטוריית Z",
+    "from": "מ-",
+    "to": "עד",
+    "generatedBy": "הופק על ידי",
+    "print": "הדפסה",
+    "runZ": "הפקת דוח Z",
+    "periodStarted": "תחילת התקופה",
+    "lastZ": "Z אחרון",
+    "noZYet": "טרם הופק דוח Z",
+    "openOrdersBlock": "הזמנות פתוחות עם פריטים: {{count}} — יש לשלם או לבטל אותן לפני הפקת Z",
+    "summary": {
+      "gross": "מכירות ברוטו",
+      "discounts": "הנחות",
+      "net": "מכירות נטו",
+      "vat": "מע\"מ כלול",
+      "orders": "הזמנות",
+      "guests": "סועדים",
+      "avgCheck": "ממוצע לחשבון",
+      "voids": "פריטים שבוטלו"
+    },
+    "sections": {
+      "byPayment": "מכירות לפי אמצעי תשלום",
+      "byGroup": "מכירות לפי קטגוריה",
+      "byEmployee": "מכירות לפי עובד",
+      "discounts": "הנחות",
+      "vat": "מע\"מ לפי שיעור",
+      "voids": "פריטים שבוטלו",
+      "declarations": "הצהרת קופה מול צפוי"
+    },
+    "cols": {
+      "method": "אמצעי תשלום",
+      "count": "כמות",
+      "amount": "סכום",
+      "category": "קטגוריה",
+      "quantity": "כמות",
+      "employee": "עובד",
+      "orders": "הזמנות",
+      "rate": "שיעור",
+      "base": "לפני מע\"מ",
+      "vat": "מע\"מ",
+      "gross": "ברוטו",
+      "reason": "סיבה",
+      "label": "הנחה",
+      "expected": "צפוי",
+      "declared": "הוצהר",
+      "difference": "הפרש",
+      "total": "סה\"כ",
+      "number": "מס'",
+      "closedAt": "נסגר",
+      "net": "מכירות נטו",
+      "cashDiff": "הפרש מזומן"
+    },
+    "declaration": {
+      "title": "הצהרת קופה",
+      "hint": "ספרו את התקבולים בקופה לכל אמצעי תשלום והזינו את הסכומים. הסכומים הצפויים אינם מוצגים כאן כדי שהספירה תהיה בלתי תלויה — הם מופיעים בדוח X.",
+      "save": "שמירת הצהרה",
+      "saved": "ההצהרה נשמרה",
+      "notDeclared": "לא הוצהר"
+    },
+    "declarationsMissing": "לא הוזנה הצהרת קופה לתקופה זו.",
+    "voidReasonNone": "(ללא סיבה)",
+    "history": {
+      "empty": "טרם הופקו דוחות Z",
+      "back": "חזרה לרשימה",
+      "view": "הצגה"
+    },
+    "zModal": {
+      "title": "להפיק דוח Z?",
+      "warning": "הפעולה סוגרת את התקופה הנוכחית ואינה ניתנת לביטול. הסכומים נשמרים בדוח ממוספר והתקופה הבאה מתחילה מאפס.",
+      "willCancel": "הזמנות פתוחות ריקות שיבוטלו: {{count}}",
+      "willClockOut": "עובדים שעדיין במשמרת ויוצאו ממנה: {{names}}",
+      "missingDeclaration": "לא הוזנה הצהרת קופה לתקופה זו.",
+      "blockedTitle": "לא ניתן להפיק Z כרגע",
+      "blockedHelp": "בהזמנות אלה עדיין יש פריטים. יש לשלם או לבטל אותן תחילה:",
+      "confirm": "כן, הפק Z"
+    },
+    "zSuccess": "דוח Z מס' {{number}} הופק",
+    "zBlocked": "יש לשלם או לבטל הזמנות פתוחות עם פריטים",
+    "zJustRun": "דוח Z הופק זה עתה — המתינו מספר שניות",
+    "zActions": "מה ביצע ה-Z",
+    "autoClockedOut": "יצאו ממשמרת ע\"י Z",
+    "autoCancelled": "הזמנות ריקות שבוטלו ע\"י Z",
+    "noData": "אין נתונים בתקופה זו",
+    "table": "שולחן",
+    "order": "הזמנה"
   }
 }

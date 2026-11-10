@@ -18,10 +18,11 @@ router.get('/kpis', authenticate, requireRole('admin', 'manager', 'cashier'), as
     [branchId]
   );
 
+  // Sales of the current period = paid orders no Z report has claimed yet (like the X report)
   const [[revenue]]: any = await pool.execute(
     `SELECT COALESCE(SUM(total), 0) AS today,
             COALESCE(AVG(total), 0) AS avg_check
-     FROM orders WHERE branch_id = ? AND status = 'paid' AND DATE(closed_at) = CURDATE()`,
+     FROM orders WHERE branch_id = ? AND status = 'paid' AND z_report_id IS NULL`,
     [branchId]
   );
 

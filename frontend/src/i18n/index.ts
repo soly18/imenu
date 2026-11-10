@@ -28,10 +28,12 @@ i18n
   });
 
 // Update document direction on language change
-i18n.on('languageChanged', (lng) => {
-  const dir = ['he', 'ar'].includes(lng) ? 'rtl' : 'ltr';
-  document.documentElement.dir = dir;
-  document.documentElement.lang = lng;
-});
+const applyDir = (lng: string) => {
+  const base = (lng || 'he').split('-')[0];
+  document.documentElement.dir = ['he', 'ar'].includes(base) ? 'rtl' : 'ltr';
+  document.documentElement.lang = base;
+};
+i18n.on('languageChanged', applyDir);
+applyDir(i18n.resolvedLanguage || i18n.language); // also apply on first load
 
 export default i18n;
