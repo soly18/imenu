@@ -4,3 +4,9 @@ dist/
 build/
 *.log
 .DS_Store
+
+# customer database dumps: never commit
+*.sql
+!backend/src/db/*.sql
+!_previous-session/**/*.sql
+!tools/legacy/*.sql

@@ -1,7 +1,7 @@
 import api from './client';
 import type {
   LoginRequest, LoginResponse, DashboardKPIs, MenuGroup, MenuItem, Order,
-  PaymentMethod, OrderBoardItem, EodReport, EodStatus, ZReportListItem,
+  PaymentMethod, OrderBoardItem, FloorPlanWithOrders, EodReport, EodStatus, ZReportListItem,
 } from '@imenu25/shared';
 
 // ── Auth ──────────────────────────────────────────────────────
@@ -70,4 +70,8 @@ export const eodApi = {
   runZ: () => api.post<{ id: number; report: EodReport }>('/eod/z').then(r => r.data),
   zList: () => api.get<ZReportListItem[]>('/eod/z').then(r => r.data),
   zGet: (id: number) => api.get<{ id: number; report: EodReport }>(`/eod/z/${id}`).then(r => r.data),
+};
+
+export const tablesApi = {
+  list: () => api.get<FloorPlanWithOrders[]>('/tables').then(r => r.data),
 };

@@ -20,6 +20,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const isManager = employee?.role === 'admin' || employee?.role === 'manager';
   const navItems = [
     { to: '/dashboard', label: t('nav.dashboard'), icon: '📊' },
+    { to: '/tables',    label: t('nav.tables'),    icon: '🍽️' },
     { to: '/pos',       label: t('nav.pos'),       icon: '🛒' },
     { to: '/orders',    label: t('nav.orders'),    icon: '📋' },
     ...(isManager ? [{ to: '/reports', label: t('nav.reports'), icon: '🧾' }] : []),
@@ -66,8 +67,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
           {/* Employee */}
           {employee && (
-            <span className="text-sm text-gray-300 hidden md:inline">
-              {employee.firstName}
+            <span className="flex items-center gap-2 bg-gray-800 rounded-full ps-1 pe-3 py-1 min-w-0" title={t(`roles.${employee.role}`)}>
+              <span className="w-7 h-7 rounded-full bg-brand-500 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
+                {(employee.firstName[0] || '') + (employee.lastName?.[0] || '')}
+              </span>
+              <span className="text-sm text-white font-medium truncate max-w-[9rem]">
+                {employee.firstName} {employee.lastName}
+              </span>
+              <span className="text-[10px] uppercase tracking-wide text-brand-300 hidden sm:inline">
+                {t(`roles.${employee.role}`)}
+              </span>
             </span>
           )}
 

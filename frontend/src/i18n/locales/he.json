@@ -8,7 +8,8 @@
     "backoffice": "משרד אחורי",
     "logout": "התנתק",
     "reports": "דוחות",
-    "orders": "הזמנות"
+    "orders": "הזמנות",
+    "tables": "שולחנות"
   },
   "auth": {
     "enterPin": "הכנס PIN",
@@ -208,5 +209,19 @@
       "cancelled": "בוטלה",
       "void": "מבוטלת"
     }
+  },
+  "tables": {
+    "title": "שולחנות",
+    "free": "פנוי",
+    "open": "פתוח",
+    "sent": "נשלח",
+    "empty": "עדיין לא הוגדרה מפת שולחנות"
+  },
+  "roles": {
+    "admin": "מנהל מערכת",
+    "manager": "מנהל",
+    "cashier": "קופאי",
+    "waiter": "מלצר",
+    "kitchen": "מטבח"
   }
 }

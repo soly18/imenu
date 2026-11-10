@@ -38,6 +38,12 @@ imenu25/
 - POS: pick category, add items, change quantity, void, send to kitchen, pay (cash/card)
 - Server is the source of truth for order totals
 
+## Tables map
+`/tables`: floor plan with live table status (free / open / sent to kitchen), your own tables highlighted. Tap a free table to open an order, tap an occupied one to continue it. A table can only have one open order: a second waiter tapping it gets the same order.
+
+## Migrating a customer from the Delphi version
+See `docs/legacy-migration.md` (plan) and `tools/legacy/inspect.sql` (read-only database inspection to run first).
+
 ## Orders board
 `/orders`: live board (refreshes every 10 s) with one column per employee and a colour per status (open, sent to kitchen, paid, cancelled, void). Tap an open order to continue it in the POS. Scrolling works by touch, wheel and mouse drag in both directions (`frontend/src/hooks/useDragScroll.tsx`). To add a status, see the comment at the top of `OrdersPage.tsx`.
 

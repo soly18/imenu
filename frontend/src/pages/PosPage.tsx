@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 import { menuApi, ordersApi } from '@/api';
 import { DragScroll } from '@/hooks/useDragScroll';
+import { useAuthStore } from '@/store/authStore';
 import { usePosStore } from '@/store/posStore';
 import type { MenuItem, MenuGroup } from '@imenu25/shared';
 
@@ -79,7 +80,8 @@ export default function PosPage() {
   const qc = useQueryClient();
   const [activeGroup, setActiveGroup] = useState<number | null>(null);
   const [showPay, setShowPay] = useState(false);
-  const { items, orderId, clearOrder, setOrderId, setItems, subtotal } = usePosStore();
+  const { items, orderId, clearOrder, setOrderId, setItems, subtotal, tableLabel, setTable } = usePosStore();
+  const employee = useAuthStore((s) => s.employee);
   const [params, setParams] = useSearchParams();
 
   // "?order=ID" (from the Z report) opens an existing unpaid order
@@ -89,7 +91,10 @@ export default function PosPage() {
     (async () => {
       try {
         const o: any = await ordersApi.get(id);
-        if (['open', 'sent'].includes(o.status)) { setOrderId(id); setItems(o.items); }
+        if (['open', 'sent'].includes(o.status)) {
+          setOrderId(id); setItems(o.items);
+          if (o.tableId) setTable(o.tableId, o.tableLabel ?? ''); else setTable(null as any, null as any);
+        }
         else toast.error(t('pos.orderClosed'));
       } catch { toast.error(t('common.error')); }
       setParams({}, { replace: true });
@@ -101,6 +106,11 @@ export default function PosPage() {
     queryKey: ['menu-groups'],
     queryFn: menuApi.groups,
   });
+
+  // show the first category automatically, so a new order never starts with an empty screen
+  useEffect(() => {
+    if (activeGroup === null && groups.length) setActiveGroup(groups[0].id);
+  }, [groups, activeGroup]);
 
   const { data: menuItems = [] } = useQuery<MenuItem[]>({
     queryKey: ['menu-items', activeGroup],
@@ -211,7 +221,11 @@ export default function PosPage() {
       <div className="w-72 xl:w-80 flex flex-col bg-white border-s border-gray-200 shadow-lg">
         <div className="p-4 border-b border-gray-100">
           <h2 className="font-bold text-gray-800">{t('pos.title')}</h2>
-          {orderId && <p className="text-xs text-gray-400">#{orderId}</p>}
+          <p className="text-xs text-gray-500 flex flex-wrap gap-x-2">
+            {employee && <span>👤 {employee.firstName} {employee.lastName}</span>}
+            {tableLabel && <span className="font-semibold text-gray-700">🍽️ {t('eod.table')} {tableLabel}</span>}
+            {orderId && <span className="text-gray-400">#{orderId}</span>}
+          </p>
         </div>
 
         {/* Order items */}

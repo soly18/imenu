@@ -8,7 +8,8 @@
     "backoffice": "Back Office",
     "logout": "Logout",
     "reports": "Reports",
-    "orders": "Orders"
+    "orders": "Orders",
+    "tables": "Tables"
   },
   "auth": {
     "enterPin": "Enter PIN",
@@ -208,5 +209,19 @@
       "cancelled": "Cancelled",
       "void": "Void"
     }
+  },
+  "tables": {
+    "title": "Tables",
+    "free": "Free",
+    "open": "Open",
+    "sent": "Sent",
+    "empty": "No floor plan defined yet"
+  },
+  "roles": {
+    "admin": "Admin",
+    "manager": "Manager",
+    "cashier": "Cashier",
+    "waiter": "Waiter",
+    "kitchen": "Kitchen"
   }
 }

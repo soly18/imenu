@@ -281,3 +281,15 @@ export interface OrderBoardItem {
   guestCount: number; itemCount: number; total: number;
   openedAt: string; closedAt: string | null;
 }
+
+/** Floor plan with tables and the open order on each (GET /api/tables). */
+export interface TableOrderInfo {
+  id: number; status: OrderStatus; total: number; guestCount: number; openedAt: string;
+  employeeId: number; employeeName: string; orderCount: number;
+}
+export interface FloorTable {
+  id: number; label: string; shape: 'rect' | 'circle';
+  x: number; y: number; width: number; height: number; capacity: number;
+  order: TableOrderInfo | null;
+}
+export interface FloorPlanWithOrders { id: number; name: string; tables: FloorTable[]; }

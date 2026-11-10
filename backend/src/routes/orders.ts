@@ -100,23 +100,47 @@ router.get('/:id', authenticate, async (req: AuthRequest, res: Response) => {
     [req.params.id]
   );
 
-  return res.json({ ...orders[0], items, discounts });
+  return res.json({ ...orders[0], tableId: orders[0].table_id ?? undefined, items, discounts });
 });
 
 // POST /api/orders  (open new order)
+// With a tableId: if the table already has an open order, that order is returned
+// (existing: true) instead of creating a second one.
 router.post('/', authenticate, async (req: AuthRequest, res: Response) => {
   const { tableId, orderType = 'dine_in', guestCount = 1 } = req.body;
+  const branchId = req.user!.branchId;
   const orderNumber = `${Date.now()}`;
-
-  const [result]: any = await pool.execute(
-    `INSERT INTO orders (branch_id, order_number, table_id, employee_id, order_type, guest_count)
-     VALUES (?, ?, ?, ?, ?, ?)`,
-    [req.user!.branchId, orderNumber, tableId || null, req.user!.employeeId, orderType, guestCount]
-  );
-  return res.status(201).json({ id: result.insertId, orderNumber });
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
+    if (tableId) {
+      // lock the table row so two waiters tapping the same table cannot both create an order
+      const [t]: any = await conn.execute(
+        `SELECT t.id FROM tables t JOIN floor_plans f ON f.id = t.floor_plan_id
+         WHERE t.id = ? AND f.branch_id = ? FOR UPDATE`, [tableId, branchId]);
+      if (!t.length) { await conn.rollback(); return res.status(404).json({ error: 'Table not found' }); }
+      const [ex]: any = await conn.execute(
+        `SELECT id, order_number AS orderNumber FROM orders
+         WHERE table_id = ? AND branch_id = ? AND status IN ('open','sent')
+         ORDER BY opened_at DESC LIMIT 1`, [tableId, branchId]);
+      if (ex.length) { await conn.commit(); return res.json({ ...ex[0], existing: true }); }
+    }
+    const [result]: any = await conn.execute(
+      `INSERT INTO orders (branch_id, order_number, table_id, employee_id, order_type, guest_count)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [branchId, orderNumber, tableId || null, req.user!.employeeId, orderType, guestCount]
+    );
+    await conn.commit();
+    return res.status(201).json({ id: result.insertId, orderNumber });
+  } catch (e) {
+    await conn.rollback();
+    console.error(e);
+    return res.status(500).json({ error: 'Could not create order' });
+  } finally {
+    conn.release();
+  }
 });
 
-// POST /api/orders/:id/items   (the price always comes from the menu, never from the browser)
 router.post('/:id/items', authenticate, async (req: AuthRequest, res: Response) => {
   if (!(await isOpenOrder(req.params.id, req.user!.branchId))) return res.status(409).json(CLOSED);
 
