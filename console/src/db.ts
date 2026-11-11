@@ -1,6 +1,15 @@
 import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
 dotenv.config();
+
+// No second .env needed on a dev machine: borrow the MySQL login from backend/.env when console/.env lacks it.
+// (Only the connection details; the console always uses its own database, never the POS database.)
+try {
+  const b = dotenv.parse(fs.readFileSync(path.resolve(__dirname, '../../backend/.env')));
+  for (const k of ['DB_HOST', 'DB_PORT', 'DB_USER', 'DB_PASSWORD']) if (process.env[k] === undefined && b[k] !== undefined) process.env[k] = b[k];
+} catch { /* no backend/.env: use defaults */ }
 
 const cfg = {
   host: process.env.DB_HOST || 'localhost',
@@ -8,7 +17,7 @@ const cfg = {
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || '',
 };
-export const DB_NAME = process.env.DB_NAME || 'imenu_console';
+export const DB_NAME = process.env.CONSOLE_DB_NAME || 'imenu_console';
 
 export let pool: mysql.Pool;
 

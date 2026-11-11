@@ -32,10 +32,13 @@ For real use put it on a server with HTTPS (reverse proxy). Sign in with `CONSOL
 ## Run everything on your Mac until you have a server
 ```bash
 git pull && npm install
-cp console/.env.example console/.env      # DB_PASSWORD = the same MySQL password as backend/.env; set CONSOLE_ADMIN_PASSWORD
-cp frontend/.env.example frontend/.env.local
-npm run dev:all                            # backend + frontend + console together
+npm run dev:all        # backend + frontend + console together
 ```
+No `.env` copying is needed: the console reuses the MySQL login from `backend/.env` and starts with the login
+`owner` / `change-me-now` (it warns in its log). To change the password or other settings, copy
+`console/.env.example` to `console/.env` and edit. In development the app reports to `http://localhost:4000`
+automatically (`frontend/.env.development`).
+
 Open http://localhost:4000 (panel), then http://localhost:5173 (the POS): the Mac's browser appears in **Devices**,
 attached to the customer "My first customer". Other devices on the same Wi-Fi: use the Mac's address
 (e.g. `http://192.168.1.20:4000`) instead of `localhost` as the console address on those devices.

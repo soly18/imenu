@@ -12,7 +12,7 @@ import { FEATURES, cleanFeatures, effectiveFeatures } from './features';
 
 dotenv.config();
 const app = express();
-const PORT = Number(process.env.PORT) || 4000;
+const PORT = Number(process.env.CONSOLE_PORT) || 4000;
 const ADMIN_USER = process.env.CONSOLE_ADMIN_USER || 'owner';
 const ADMIN_PASS = process.env.CONSOLE_ADMIN_PASSWORD || 'change-me-now';
 const SECRET = process.env.CONSOLE_JWT_SECRET || crypto.randomBytes(32).toString('hex'); // random = logins end on restart
