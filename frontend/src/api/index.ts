@@ -1,4 +1,4 @@
-import api from './client';
+import api, { platform } from './client';
 import type {
   LoginRequest, LoginResponse, DashboardKPIs, MenuGroup, MenuItem, Order,
   PaymentMethod, OrderBoardItem, FloorPlanWithOrders, EodReport, EodStatus, ZReportListItem,
@@ -6,7 +6,7 @@ import type {
 
 // ── Auth ──────────────────────────────────────────────────────
 export const authApi = {
-  login: (data: LoginRequest) => api.post<LoginResponse>('/auth/login', data).then(r => r.data),
+  login: (data: LoginRequest) => api.post<LoginResponse>('/auth/login', { ...data, platform: platform() }).then(r => r.data),
   logout: () => api.post('/auth/logout'),
   me: () => api.get('/auth/me').then(r => r.data),
 };
@@ -84,4 +84,17 @@ export const migrationApi = {
   discover: () => api.post('/migration/discover', {}, { timeout: 60_000 }).then(r => r.data),
   sync: (dryRun: boolean) =>
     api.post('/migration/sync', { dryRun }, { timeout: 120_000, validateStatus: () => true }).then(r => r.data),
+};
+
+// ── Administrator panel ───────────────────────────────────────
+export const adminApi = {
+  summary: () => api.get('/admin/summary').then(r => r.data as { pendingDevices: number }),
+  users: () => api.get('/admin/users').then(r => r.data),
+  createUser: (b: any) => api.post('/admin/users', b).then(r => r.data),
+  updateUser: (id: number, b: any) => api.patch(`/admin/users/${id}`, b).then(r => r.data),
+  devices: () => api.get('/admin/devices').then(r => r.data),
+  updateDevice: (id: number, b: any) => api.patch(`/admin/devices/${id}`, b).then(r => r.data),
+  deleteDevice: (id: number) => api.delete(`/admin/devices/${id}`).then(r => r.data),
+  settings: () => api.get('/admin/settings').then(r => r.data as { requireDeviceApproval: boolean }),
+  saveSettings: (b: { requireDeviceApproval: boolean }) => api.put('/admin/settings', b).then(r => r.data),
 };

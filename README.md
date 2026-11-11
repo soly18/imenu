@@ -62,3 +62,6 @@ After pulling this version run `npm run migrate` in `backend/` (adds `legacy_con
 
 ## Languages
 Hebrew (RTL), English, Arabic (RTL), Russian — switch from the login screen or top bar.
+
+## Android app, admin panel, themes
+See [docs/android-and-admin.md](docs/android-and-admin.md).

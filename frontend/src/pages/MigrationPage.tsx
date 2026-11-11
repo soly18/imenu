@@ -6,12 +6,12 @@ import { migrationApi } from '@/api';
 import { fmtDateTime } from '@/utils/format';
 
 const BADGE: Record<string, string> = {
-  idle: 'bg-gray-100 text-gray-700', offline: 'bg-red-100 text-red-800', error: 'bg-red-100 text-red-800',
-  connected: 'bg-blue-100 text-blue-800', needs_approval: 'bg-amber-100 text-amber-800',
-  synced: 'bg-green-100 text-green-800', running: 'bg-purple-100 text-purple-800',
+  idle: 'bg-gray-100 dark:bg-gray-700 dark:bg-gray-700 text-gray-700 dark:text-gray-200 dark:text-gray-200', offline: 'bg-red-100 dark:bg-red-900/40 dark:bg-red-900/40 text-red-800 dark:text-red-200 dark:text-red-200', error: 'bg-red-100 dark:bg-red-900/40 dark:bg-red-900/40 text-red-800 dark:text-red-200 dark:text-red-200',
+  connected: 'bg-blue-100 dark:bg-blue-900/40 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 dark:text-blue-200', needs_approval: 'bg-amber-100 dark:bg-amber-900/40 dark:bg-amber-900/40 text-amber-800 dark:text-amber-200 dark:text-amber-200',
+  synced: 'bg-green-100 dark:bg-green-900/40 dark:bg-green-900/40 text-green-800 dark:text-green-200 dark:text-green-200', running: 'bg-purple-100 dark:bg-purple-900/40 dark:bg-purple-900/40 text-purple-800 dark:text-purple-200 dark:text-purple-200',
 };
 
-const input = 'w-full min-h-[44px] rounded-xl border border-gray-300 px-3 text-sm bg-white';
+const input = 'w-full min-h-[44px] rounded-xl border border-gray-300 dark:border-gray-600 dark:border-gray-600 px-3 text-sm bg-white dark:bg-gray-800 dark:bg-gray-800';
 const btn = 'min-h-[44px] px-5 rounded-xl font-semibold text-sm disabled:opacity-50';
 
 export default function MigrationPage() {
@@ -57,31 +57,31 @@ export default function MigrationPage() {
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-5">
       <div className="flex items-center gap-3 flex-wrap">
-        <h1 className="text-2xl font-bold text-gray-900">{t('migration.title')}</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">{t('migration.title')}</h1>
         <span className={`text-xs font-semibold px-3 py-1 rounded-full ${BADGE[state] ?? BADGE.idle}`}>{t(`migration.state.${state}`)}</span>
       </div>
-      <p className="text-gray-600 text-sm">{t('migration.intro')}</p>
+      <p className="text-gray-600 dark:text-gray-300 dark:text-gray-300 text-sm">{t('migration.intro')}</p>
 
       {/* 1. connection */}
-      <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
-        <h2 className="font-bold text-gray-900">1. {t('migration.connection')}</h2>
-        <p className="text-sm text-gray-500">{t('migration.connectionHelp')}</p>
+      <section className="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 dark:border-gray-700 p-5 space-y-4">
+        <h2 className="font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">1. {t('migration.connection')}</h2>
+        <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('migration.connectionHelp')}</p>
         <div className="flex flex-wrap items-center gap-3">
           <button className={`${btn} bg-gray-900 text-white`} disabled={scan.isPending} onClick={() => { setFound(null); scan.mutate(); }}>
             {scan.isPending ? t('migration.scanning') : `🔎 ${t('migration.find')}`}
           </button>
           {data?.thisDevice?.length > 0 && (
-            <span className="text-xs text-gray-500">{t('migration.thisDevice')}: <bdi>{data.thisDevice.map((a: any) => a.address).join(', ')}</bdi></span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('migration.thisDevice')}: <bdi>{data.thisDevice.map((a: any) => a.address).join(', ')}</bdi></span>
           )}
         </div>
         {found && (
-          <div className="rounded-xl bg-gray-50 border border-gray-200 divide-y divide-gray-200 text-sm">
-            {found.length === 0 && <p className="p-3 text-gray-500">{t('migration.noneFound')}</p>}
+          <div className="rounded-xl bg-gray-50 dark:bg-gray-900 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-700 dark:divide-gray-700 text-sm">
+            {found.length === 0 && <p className="p-3 text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('migration.noneFound')}</p>}
             {found.map((x) => (
               <button key={x.host} onClick={() => { set('host', x.host); set('port', x.port); }} className="w-full text-start p-3 min-h-[44px] hover:bg-white flex flex-wrap gap-x-3">
                 <b dir="ltr">{x.host}</b>
-                {x.version && <span className="text-green-700">MySQL {x.version}</span>}
-                {x.blocked && <span className="text-amber-700">{t('migration.blocked')}</span>}
+                {x.version && <span className="text-green-700 dark:text-green-300 dark:text-green-300">MySQL {x.version}</span>}
+                {x.blocked && <span className="text-amber-700 dark:text-amber-300 dark:text-amber-300">{t('migration.blocked')}</span>}
               </button>
             ))}
           </div>
@@ -99,63 +99,63 @@ export default function MigrationPage() {
           </label>
         </div>
         <div className="flex flex-wrap gap-3 items-center">
-          <button className={`${btn} bg-white border border-gray-300 text-gray-800`} disabled={test.isPending} onClick={() => test.mutate()}>{t('migration.test')}</button>
+          <button className={`${btn} bg-white dark:bg-gray-800 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 dark:border-gray-600 text-gray-800 dark:text-gray-100 dark:text-gray-100`} disabled={test.isPending} onClick={() => test.mutate()}>{t('migration.test')}</button>
           <button className={`${btn} bg-brand-500 text-white`} disabled={save.isPending} onClick={() => save.mutate()}>{t('migration.save')}</button>
           {testResult && (testResult.ok
-            ? <span className="text-sm text-green-700">✅ MySQL <bdi>{testResult.version}</bdi> · {testResult.tables} {t('migration.tables')}</span>
-            : <span className="text-sm text-red-700">❌ {testResult.message}</span>)}
+            ? <span className="text-sm text-green-700 dark:text-green-300 dark:text-green-300">✅ MySQL <bdi>{testResult.version}</bdi> · {testResult.tables} {t('migration.tables')}</span>
+            : <span className="text-sm text-red-700 dark:text-red-300 dark:text-red-300">❌ {testResult.message}</span>)}
         </div>
       </section>
 
       {/* 2. automatic */}
-      <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-3">
-        <h2 className="font-bold text-gray-900">2. {t('migration.auto')}</h2>
+      <section className="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 dark:border-gray-700 p-5 space-y-3">
+        <h2 className="font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">2. {t('migration.auto')}</h2>
         <label className="flex items-center gap-3 min-h-[44px] cursor-pointer">
           <input type="checkbox" className="w-6 h-6" checked={f.autoEnabled}
             onChange={(e) => { set('autoEnabled', e.target.checked); if (cfg) migrationApi.save({ ...f, password: '', autoEnabled: e.target.checked }).then(() => qc.invalidateQueries({ queryKey: ['migration'] })); }} />
           <span className="text-sm">{t('migration.autoHelp')}</span>
         </label>
         {cfg && (
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">
             {cfg.lastSeenAt && <>{t('migration.lastSeen')}: <bdi>{fmtDateTime(cfg.lastSeenAt, lng)}</bdi> · </>}
             {cfg.lastSyncAt && <>{t('migration.lastSync')}: <bdi>{fmtDateTime(cfg.lastSyncAt, lng)}</bdi></>}
           </p>
         )}
-        {cfg?.lastError && state !== 'synced' && <p className="text-sm text-red-700">{cfg.lastError}</p>}
-        {state === 'needs_approval' && <p className="text-sm text-amber-800 bg-amber-50 rounded-xl p-3">{t('migration.needsApproval')}</p>}
+        {cfg?.lastError && state !== 'synced' && <p className="text-sm text-red-700 dark:text-red-300 dark:text-red-300">{cfg.lastError}</p>}
+        {state === 'needs_approval' && <p className="text-sm text-amber-800 dark:text-amber-200 dark:text-amber-200 bg-amber-50 dark:bg-amber-900/30 dark:bg-amber-900/30 rounded-xl p-3">{t('migration.needsApproval')}</p>}
       </section>
 
       {/* 3. check & import */}
-      <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
-        <h2 className="font-bold text-gray-900">3. {t('migration.review')}</h2>
+      <section className="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 dark:border-gray-700 p-5 space-y-4">
+        <h2 className="font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">3. {t('migration.review')}</h2>
         <div className="flex flex-wrap gap-3">
-          <button className={`${btn} bg-white border border-gray-300 text-gray-800`} disabled={!cfg || busy} onClick={() => sync.mutate(true)}>🔍 {t('migration.checkNow')}</button>
+          <button className={`${btn} bg-white dark:bg-gray-800 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 dark:border-gray-600 text-gray-800 dark:text-gray-100 dark:text-gray-100`} disabled={!cfg || busy} onClick={() => sync.mutate(true)}>🔍 {t('migration.checkNow')}</button>
           <button className={`${btn} bg-green-600 text-white`} disabled={!cfg || busy || !report}
             onClick={() => { if (window.confirm(t('migration.confirmImport'))) sync.mutate(false); }}>✅ {t('migration.approve')}</button>
-          {cfg?.profile && <button className={`${btn} bg-gray-100 text-gray-700`} onClick={dl}>⬇ {t('migration.downloadProfile')}</button>}
+          {cfg?.profile && <button className={`${btn} bg-gray-100 dark:bg-gray-700 dark:bg-gray-700 text-gray-700 dark:text-gray-200 dark:text-gray-200`} onClick={dl}>⬇ {t('migration.downloadProfile')}</button>}
         </div>
         {report && (
           <div className="space-y-3">
-            <p className="text-xs text-gray-500">{report.dryRun ? t('migration.dryRunNote') : t('migration.importedNote')} · <bdi>{fmtDateTime(report.startedAt, lng)}</bdi></p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">{report.dryRun ? t('migration.dryRunNote') : t('migration.importedNote')} · <bdi>{fmtDateTime(report.startedAt, lng)}</bdi></p>
             {report.entities.map((e: any) => (
-              <div key={e.entity} className="border border-gray-200 rounded-xl p-3 text-sm">
+              <div key={e.entity} className="border border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-xl p-3 text-sm">
                 <div className="flex flex-wrap gap-x-4 gap-y-1 items-baseline">
                   <b>{e.entity}</b>
                   {e.source && <span className="text-xs text-gray-400" dir="ltr">{e.source}</span>}
                   <span>{t('migration.found')} {e.found}</span>
-                  <span className="text-green-700">+{e.created}</span><span className="text-blue-700">↻{e.updated}</span>
-                  {e.deactivated > 0 && <span className="text-gray-500">⏸{e.deactivated}</span>}
-                  {e.skipped > 0 && <span className="text-red-700">✕{e.skipped}</span>}
+                  <span className="text-green-700 dark:text-green-300 dark:text-green-300">+{e.created}</span><span className="text-blue-700 dark:text-blue-300 dark:text-blue-300">↻{e.updated}</span>
+                  {e.deactivated > 0 && <span className="text-gray-500 dark:text-gray-400 dark:text-gray-400">⏸{e.deactivated}</span>}
+                  {e.skipped > 0 && <span className="text-red-700 dark:text-red-300 dark:text-red-300">✕{e.skipped}</span>}
                 </div>
                 {e.columns && Object.keys(e.columns).length > 0 && (
                   <p className="text-[11px] text-gray-400 mt-1" dir="ltr">
                     {Object.entries(e.columns).map(([k, v]) => `${k} ← ${v}`).join('   ·   ')}
                   </p>
                 )}
-                {e.notes.map((n: string, i: number) => <p key={i} className="text-xs text-amber-800 mt-1">⚠ {n}</p>)}
+                {e.notes.map((n: string, i: number) => <p key={i} className="text-xs text-amber-800 dark:text-amber-200 dark:text-amber-200 mt-1">⚠ {n}</p>)}
                 {e.samples.length > 0 && (
-                  <div className="mt-2 text-xs text-gray-600 flex flex-wrap gap-2">
-                    {e.samples.map((s: any, i: number) => <span key={i} className="bg-gray-100 rounded-lg px-2 py-1">{Object.values(s).map((v: any) => v === true ? '✓' : v === false ? '✗' : v).join(' · ')}</span>)}
+                  <div className="mt-2 text-xs text-gray-600 dark:text-gray-300 dark:text-gray-300 flex flex-wrap gap-2">
+                    {e.samples.map((s: any, i: number) => <span key={i} className="bg-gray-100 dark:bg-gray-700 dark:bg-gray-700 rounded-lg px-2 py-1">{Object.values(s).map((v: any) => v === true ? '✓' : v === false ? '✗' : v).join(' · ')}</span>)}
                   </div>
                 )}
               </div>

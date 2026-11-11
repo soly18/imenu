@@ -17,19 +17,19 @@ function OrderItemRow({ item, onVoid, onQty }: {
 }) {
   const { t } = useTranslation();
   return (
-    <div className="flex items-center gap-2 py-2 border-b border-gray-100 last:border-0">
+    <div className="flex items-center gap-2 py-2 border-b border-gray-100 dark:border-gray-700 dark:border-gray-700 last:border-0">
       <div className="flex-1 min-w-0">
-        <p className="font-medium text-gray-900 truncate text-sm">{item.namePrimary}</p>
+        <p className="font-medium text-gray-900 dark:text-gray-100 dark:text-gray-100 truncate text-sm">{item.namePrimary}</p>
         {item.choices?.length > 0 && (
           <p className="text-xs text-gray-400">{item.choices.map((c: any) => c.namePrimary).join(', ')}</p>
         )}
       </div>
       <div className="flex items-center gap-1">
-        <button onClick={() => onQty(item.quantity - 1)} className="w-7 h-7 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center text-lg font-bold hover:bg-gray-200">−</button>
+        <button onClick={() => onQty(item.quantity - 1)} className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-gray-700 dark:bg-gray-700 text-gray-600 dark:text-gray-300 dark:text-gray-300 flex items-center justify-center text-lg font-bold hover:bg-gray-200 dark:hover:bg-gray-500 dark:hover:bg-gray-500">−</button>
         <span className="w-6 text-center text-sm font-semibold">{item.quantity}</span>
-        <button onClick={() => onQty(item.quantity + 1)} className="w-7 h-7 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center text-lg font-bold hover:bg-gray-200">+</button>
+        <button onClick={() => onQty(item.quantity + 1)} className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-gray-700 dark:bg-gray-700 text-gray-600 dark:text-gray-300 dark:text-gray-300 flex items-center justify-center text-lg font-bold hover:bg-gray-200 dark:hover:bg-gray-500 dark:hover:bg-gray-500">+</button>
       </div>
-      <span className="text-sm font-semibold text-gray-700 w-16 text-end">₪{item.totalPrice.toFixed(0)}</span>
+      <span className="text-sm font-semibold text-gray-700 dark:text-gray-200 dark:text-gray-200 w-16 text-end">₪{item.totalPrice.toFixed(0)}</span>
       <button onClick={onVoid} className="text-red-400 hover:text-red-600 text-xs px-1">✕</button>
     </div>
   );
@@ -43,17 +43,17 @@ function PayModal({ total, onPay, onClose }: { total: number; onPay: (payments: 
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-3xl w-full max-w-sm p-6">
+      <div className="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-3xl w-full max-w-sm p-6">
         <h2 className="text-xl font-bold mb-4">{t('pos.pay')}</h2>
-        <div className="text-3xl font-bold text-brand-600 mb-6">₪{total.toFixed(2)}</div>
+        <div className="text-3xl font-bold text-brand-600 dark:text-brand-400 dark:text-brand-400 mb-6">₪{total.toFixed(2)}</div>
         <div className="grid grid-cols-2 gap-3 mb-4">
           <button
             onClick={() => onPay([{ method: 'cash', amount: total }])}
-            className="pos-btn bg-green-50 text-green-700 border border-green-200 h-14"
+            className="pos-btn bg-green-50 dark:bg-green-900/30 dark:bg-green-900/30 text-green-700 dark:text-green-300 dark:text-green-300 border border-green-200 dark:border-green-800 dark:border-green-800 h-14"
           >💵 {t('pos.cash')}</button>
           <button
             onClick={() => onPay([{ method: 'credit_card', amount: total }])}
-            className="pos-btn bg-blue-50 text-blue-700 border border-blue-200 h-14"
+            className="pos-btn bg-blue-50 dark:bg-blue-900/30 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 dark:text-blue-300 border border-blue-200 dark:border-blue-800 dark:border-blue-800 h-14"
           >💳 {t('pos.card')}</button>
         </div>
         <div className="flex gap-2 mb-4">
@@ -64,11 +64,11 @@ function PayModal({ total, onPay, onClose }: { total: number; onPay: (payments: 
             onChange={(e) => setCash(e.target.value)}
             className="flex-1 border rounded-xl px-3 py-2 text-lg"
           />
-          <div className="flex-1 flex items-center justify-center bg-gray-50 rounded-xl text-sm">
+          <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-900 dark:bg-gray-900 rounded-xl text-sm">
             {t('pos.change')}: <strong className="ms-1">₪{change.toFixed(2)}</strong>
           </div>
         </div>
-        <button onClick={onClose} className="w-full pos-btn bg-gray-100 text-gray-700 h-12">{t('common.cancel')}</button>
+        <button onClick={onClose} className="w-full pos-btn bg-gray-100 dark:bg-gray-700 dark:bg-gray-700 text-gray-700 dark:text-gray-200 dark:text-gray-200 h-12">{t('common.cancel')}</button>
       </div>
     </div>
   );
@@ -170,9 +170,9 @@ export default function PosPage() {
   return (
     <div className="flex h-[calc(100vh-56px)] overflow-hidden">
       {/* ── Left: Menu ─────────────────────────────── */}
-      <div className="flex-1 flex flex-col min-w-0 bg-gray-50">
+      <div className="flex-1 flex flex-col min-w-0 bg-gray-50 dark:bg-gray-900 dark:bg-gray-900">
         {/* Group bar */}
-        <DragScroll className="flex gap-2 p-3 overflow-x-auto bg-white border-b border-gray-100">
+        <DragScroll className="flex gap-2 p-3 overflow-x-auto bg-white dark:bg-gray-800 dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 dark:border-gray-700">
           {groups.map((g) => (
             <button
               key={g.id}
@@ -180,7 +180,7 @@ export default function PosPage() {
               className={`group-btn flex-shrink-0 ${
                 activeGroup === g.id
                   ? 'bg-brand-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-gray-100 dark:bg-gray-700 dark:bg-gray-700 text-gray-700 dark:text-gray-200 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-500 dark:hover:bg-gray-500'
               }`}
               style={activeGroup !== g.id && g.color ? { borderLeft: `4px solid ${g.color}` } : {}}
             >
@@ -206,10 +206,10 @@ export default function PosPage() {
                   onClick={() => handleAddItem(item)}
                   className="menu-item-card"
                 >
-                  <p className="font-semibold text-gray-800 text-xs leading-tight mb-1 line-clamp-2">
+                  <p className="font-semibold text-gray-800 dark:text-gray-100 dark:text-gray-100 text-xs leading-tight mb-1 line-clamp-2">
                     {item.namePrimary}
                   </p>
-                  <p className="text-brand-600 font-bold text-sm">₪{item.price}</p>
+                  <p className="text-brand-600 dark:text-brand-400 dark:text-brand-400 font-bold text-sm">₪{item.price}</p>
                 </button>
               ))}
             </div>
@@ -218,12 +218,12 @@ export default function PosPage() {
       </div>
 
       {/* ── Right: Order ───────────────────────────── */}
-      <div className="w-72 xl:w-80 flex flex-col bg-white border-s border-gray-200 shadow-lg">
-        <div className="p-4 border-b border-gray-100">
-          <h2 className="font-bold text-gray-800">{t('pos.title')}</h2>
-          <p className="text-xs text-gray-500 flex flex-wrap gap-x-2">
+      <div className="w-72 xl:w-80 flex flex-col bg-white dark:bg-gray-800 dark:bg-gray-800 border-s border-gray-200 dark:border-gray-700 dark:border-gray-700 shadow-lg">
+        <div className="p-4 border-b border-gray-100 dark:border-gray-700 dark:border-gray-700">
+          <h2 className="font-bold text-gray-800 dark:text-gray-100 dark:text-gray-100">{t('pos.title')}</h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 flex flex-wrap gap-x-2">
             {employee && <span>👤 {employee.firstName} {employee.lastName}</span>}
-            {tableLabel && <span className="font-semibold text-gray-700">🍽️ {t('eod.table')} {tableLabel}</span>}
+            {tableLabel && <span className="font-semibold text-gray-700 dark:text-gray-200 dark:text-gray-200">🍽️ {t('eod.table')} {tableLabel}</span>}
             {orderId && <span className="text-gray-400">#{orderId}</span>}
           </p>
         </div>
@@ -247,14 +247,14 @@ export default function PosPage() {
         </DragScroll>
 
         {/* Totals & actions */}
-        <div className="p-4 border-t border-gray-100 space-y-3">
-          <div className="flex justify-between text-sm text-gray-600">
+        <div className="p-4 border-t border-gray-100 dark:border-gray-700 dark:border-gray-700 space-y-3">
+          <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300 dark:text-gray-300">
             <span>{t('pos.subtotal')}</span>
             <span>₪{total.toFixed(2)}</span>
           </div>
           <div className="flex justify-between font-bold text-lg">
             <span>{t('pos.total')}</span>
-            <span className="text-brand-600">₪{total.toFixed(2)}</span>
+            <span className="text-brand-600 dark:text-brand-400 dark:text-brand-400">₪{total.toFixed(2)}</span>
           </div>
           <button
             onClick={() => orderId && sendToKitchen.mutate()}

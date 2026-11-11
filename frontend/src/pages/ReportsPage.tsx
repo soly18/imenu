@@ -43,19 +43,19 @@ function DeclarationTab() {
   if (!data) return <p className="text-gray-400">{t('common.loading')}</p>;
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 max-w-xl">
-      <h2 className="font-bold text-lg text-gray-900">{t('eod.declaration.title')}</h2>
-      <p className="text-sm text-gray-500 mt-1 mb-5">{t('eod.declaration.hint')}</p>
+    <div className="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 dark:border-gray-700 shadow-sm p-6 max-w-xl">
+      <h2 className="font-bold text-lg text-gray-900 dark:text-gray-100 dark:text-gray-100">{t('eod.declaration.title')}</h2>
+      <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1 mb-5">{t('eod.declaration.hint')}</p>
       <div className="space-y-3">
         {data.methods.map((m: PaymentMethod) => (
           <label key={m} className="flex items-center gap-3">
-            <span className="w-40 text-sm font-medium text-gray-700">{t(`payments.${m}`)}</span>
+            <span className="w-40 text-sm font-medium text-gray-700 dark:text-gray-200 dark:text-gray-200">{t(`payments.${m}`)}</span>
             <input
               type="number" min="0" step="0.01" inputMode="decimal" dir="ltr"
               value={values[m] ?? ''}
               onChange={(e) => setValues((v) => ({ ...v, [m]: e.target.value }))}
               placeholder="0.00"
-              className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-lg tabular-nums"
+              className="flex-1 border border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-xl px-3 py-2 text-lg tabular-nums"
             />
           </label>
         ))}
@@ -86,7 +86,7 @@ function HistoryTab({ openId, setOpenId }: { openId: number | null; setOpenId: (
   if (openId !== null) {
     return (
       <div className="space-y-4">
-        <button onClick={() => setOpenId(null)} className="no-print text-sm text-brand-600 hover:underline">
+        <button onClick={() => setOpenId(null)} className="no-print text-sm text-brand-600 dark:text-brand-400 dark:text-brand-400 hover:underline">
           ← {t('eod.history.back')}
         </button>
         {detail.data ? <ReportView report={detail.data.report} /> : <p className="text-gray-400">{t('common.loading')}</p>}
@@ -97,9 +97,9 @@ function HistoryTab({ openId, setOpenId }: { openId: number | null; setOpenId: (
   if (!list.data) return <p className="text-gray-400">{t('common.loading')}</p>;
   if (list.data.length === 0) return <p className="text-gray-400 text-center py-10">{t('eod.history.empty')}</p>;
 
-  const th = 'px-4 py-2 text-xs font-semibold text-gray-500 text-start';
+  const th = 'px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-400 text-start';
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-x-auto">
+    <div className="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 dark:border-gray-700 shadow-sm overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
           <tr>
@@ -113,20 +113,20 @@ function HistoryTab({ openId, setOpenId }: { openId: number | null; setOpenId: (
         </thead>
         <tbody>
           {list.data.map((z) => (
-            <tr key={z.id} className="border-t border-gray-100 hover:bg-gray-50">
+            <tr key={z.id} className="border-t border-gray-100 dark:border-gray-700 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 dark:hover:bg-gray-700">
               <td className="px-4 py-2 font-semibold">#{z.reportNumber}</td>
               <td className="px-4 py-2"><bdi>{fmtDateTime(z.periodEnd, lng)}</bdi></td>
               <td className="px-4 py-2 text-end tabular-nums"><span dir="ltr">{fmtMoney(z.net, lng, cur)}</span></td>
               <td className="px-4 py-2 text-end tabular-nums">
                 {z.cashDifference === null
                   ? <span className="text-gray-400">—</span>
-                  : <span dir="ltr" className={z.cashDifference === 0 ? 'text-green-600' : z.cashDifference < 0 ? 'text-red-600' : 'text-amber-600'}>
+                  : <span dir="ltr" className={z.cashDifference === 0 ? 'text-green-600 dark:text-green-400 dark:text-green-400' : z.cashDifference < 0 ? 'text-red-600 dark:text-red-400 dark:text-red-400' : 'text-amber-600 dark:text-amber-400 dark:text-amber-400'}>
                       {fmtMoney(z.cashDifference, lng, cur)}
                     </span>}
               </td>
               <td className="px-4 py-2">{z.generatedBy}</td>
               <td className="px-4 py-2 text-end">
-                <button onClick={() => setOpenId(z.id)} className="text-brand-600 hover:underline">{t('eod.history.view')}</button>
+                <button onClick={() => setOpenId(z.id)} className="text-brand-600 dark:text-brand-400 dark:text-brand-400 hover:underline">{t('eod.history.view')}</button>
               </td>
             </tr>
           ))}
@@ -183,9 +183,9 @@ export default function ReportsPage() {
     <div className="p-6 max-w-5xl mx-auto">
       {/* Title + actions */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4 no-print">
-        <h1 className="text-2xl font-bold text-gray-900">{t('eod.title')}</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">{t('eod.title')}</h1>
         <div className="flex gap-2">
-          <button onClick={() => window.print()} className="pos-btn px-4 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50">
+          <button onClick={() => window.print()} className="pos-btn px-4 bg-white dark:bg-gray-800 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 dark:border-gray-700 text-gray-700 dark:text-gray-200 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 dark:hover:bg-gray-700">
             🖨️ {t('eod.print')}
           </button>
           <button onClick={() => { setConfirmZ(true); }} className="pos-btn px-4 bg-red-600 text-white hover:bg-red-700">
@@ -196,14 +196,14 @@ export default function ReportsPage() {
 
       {/* Status strip */}
       {st && (
-        <div className="no-print mb-4 text-sm text-gray-600 flex flex-wrap gap-x-6 gap-y-1">
+        <div className="no-print mb-4 text-sm text-gray-600 dark:text-gray-300 dark:text-gray-300 flex flex-wrap gap-x-6 gap-y-1">
           <span>{t('eod.periodStarted')}: <bdi>{fmtDateTime(st.periodStart, lng)}</bdi></span>
           <span>
             {t('eod.lastZ')}:{' '}
             {st.lastZ ? <bdi>#{st.lastZ.reportNumber} · {fmtDateTime(st.lastZ.closedAt, lng)}</bdi> : t('eod.noZYet')}
           </span>
           {st.openOrders.length > 0 && (
-            <span className="text-amber-700 font-medium">
+            <span className="text-amber-700 dark:text-amber-300 dark:text-amber-300 font-medium">
               {t('eod.openOrdersBlock', { count: st.openOrders.length })}
             </span>
           )}
@@ -211,13 +211,13 @@ export default function ReportsPage() {
       )}
 
       {/* Tabs */}
-      <div className="no-print flex gap-1 border-b border-gray-200 mb-5">
+      <div className="no-print flex gap-1 border-b border-gray-200 dark:border-gray-700 dark:border-gray-700 mb-5">
         {tabs.map((tb) => (
           <button
             key={tb.key}
             onClick={() => { setTab(tb.key); if (tb.key === 'history') setOpenZ(null); }}
             className={`px-4 py-2 text-sm font-medium -mb-px border-b-2 transition-colors ${
-              tab === tb.key ? 'border-brand-500 text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700'
+              tab === tb.key ? 'border-brand-500 text-brand-600 dark:text-brand-400 dark:text-brand-400' : 'border-transparent text-gray-500 dark:text-gray-400 dark:text-gray-400 hover:text-gray-700'
             }`}
           >
             {tb.label}
@@ -232,12 +232,12 @@ export default function ReportsPage() {
       {/* Z confirmation */}
       {confirmZ && (
         <div className="no-print fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-3xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
             {st && st.openOrders.length > 0 ? (
               <>
-                <h2 className="text-xl font-bold text-red-700 mb-2">{t('eod.zModal.blockedTitle')}</h2>
-                <p className="text-sm text-gray-600 mb-3">{t('eod.zModal.blockedHelp')}</p>
-                <ul className="text-sm divide-y divide-gray-100 border border-gray-100 rounded-xl mb-5">
+                <h2 className="text-xl font-bold text-red-700 dark:text-red-300 dark:text-red-300 mb-2">{t('eod.zModal.blockedTitle')}</h2>
+                <p className="text-sm text-gray-600 dark:text-gray-300 dark:text-gray-300 mb-3">{t('eod.zModal.blockedHelp')}</p>
+                <ul className="text-sm divide-y divide-gray-100 dark:divide-gray-700 dark:divide-gray-700 border border-gray-100 dark:border-gray-700 dark:border-gray-700 rounded-xl mb-5">
                   {st.openOrders.map((o) => (
                     <li key={o.id} className="px-3 py-2">
                       <div className="flex justify-between gap-3">
@@ -258,22 +258,22 @@ export default function ReportsPage() {
                             try { await ordersApi.cancel(o.id); qc.invalidateQueries(); }
                             catch { toast.error(t('common.error')); }
                           }}
-                          className="px-3 py-1.5 rounded-lg bg-red-50 text-red-700 text-xs font-semibold">
+                          className="px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-900/30 dark:bg-red-900/30 text-red-700 dark:text-red-300 dark:text-red-300 text-xs font-semibold">
                           {t('eod.zModal.cancelOrder')}
                         </button>
                       </div>
                     </li>
                   ))}
                 </ul>
-                <button onClick={() => setConfirmZ(false)} className="pos-btn w-full bg-gray-100 text-gray-700">
+                <button onClick={() => setConfirmZ(false)} className="pos-btn w-full bg-gray-100 dark:bg-gray-700 dark:bg-gray-700 text-gray-700 dark:text-gray-200 dark:text-gray-200">
                   {t('common.cancel')}
                 </button>
               </>
             ) : (
               <>
-                <h2 className="text-xl font-bold text-gray-900 mb-2">{t('eod.zModal.title')}</h2>
-                <p className="text-sm text-gray-600 mb-4">{t('eod.zModal.warning')}</p>
-                <ul className="text-sm text-gray-700 space-y-2 mb-5">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mb-2">{t('eod.zModal.title')}</h2>
+                <p className="text-sm text-gray-600 dark:text-gray-300 dark:text-gray-300 mb-4">{t('eod.zModal.warning')}</p>
+                <ul className="text-sm text-gray-700 dark:text-gray-200 dark:text-gray-200 space-y-2 mb-5">
                   {st && st.emptyOpenOrders > 0 && (
                     <li>• {t('eod.zModal.willCancel', { count: st.emptyOpenOrders })}</li>
                   )}
@@ -281,11 +281,11 @@ export default function ReportsPage() {
                     <li>• {t('eod.zModal.willClockOut', { names: st.clockedIn.join(', ') })}</li>
                   )}
                   {x.data && !x.data.declarationsEntered && (
-                    <li className="text-amber-700">• {t('eod.zModal.missingDeclaration')}</li>
+                    <li className="text-amber-700 dark:text-amber-300 dark:text-amber-300">• {t('eod.zModal.missingDeclaration')}</li>
                   )}
                 </ul>
                 <div className="flex gap-3">
-                  <button onClick={() => setConfirmZ(false)} className="pos-btn flex-1 bg-gray-100 text-gray-700">
+                  <button onClick={() => setConfirmZ(false)} className="pos-btn flex-1 bg-gray-100 dark:bg-gray-700 dark:bg-gray-700 text-gray-700 dark:text-gray-200 dark:text-gray-200">
                     {t('common.cancel')}
                   </button>
                   <button

@@ -2,8 +2,15 @@ import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { pool } from '../db/connection';
-import { authenticate, AuthRequest } from '../middleware/auth';
+import { authenticate, AuthRequest, deviceUidOf, requiresApproval, invalidateAuthCache } from '../middleware/auth';
 import type { JwtPayload } from '@imenu25/shared';
+
+/** Friendly device name from the User-Agent, e.g. "Android · Chrome". The admin can rename it. */
+function deviceNameFrom(ua: string, platform: string): string {
+  const os = /android/i.test(ua) ? 'Android' : /iphone|ipad/i.test(ua) ? 'iOS' : /windows/i.test(ua) ? 'Windows' : /mac os/i.test(ua) ? 'Mac' : /linux/i.test(ua) ? 'Linux' : 'Device';
+  const br = platform === 'android-app' ? 'App' : /edg\//i.test(ua) ? 'Edge' : /firefox/i.test(ua) ? 'Firefox' : /chrome|crios/i.test(ua) ? 'Chrome' : /safari/i.test(ua) ? 'Safari' : 'Browser';
+  return `${os} · ${br}`;
+}
 
 const router = Router();
 
@@ -32,6 +39,32 @@ router.post('/login', async (req: Request, res: Response) => {
     if (!matched) {
       return res.status(401).json({ error: 'Invalid PIN' });
     }
+
+    // ── device registration / policy ────────────────────────────────────────
+    const uid = deviceUidOf(req);
+    if (uid) {
+      const ua = String(req.headers['user-agent'] || '').slice(0, 255);
+      const platform = ['android-app', 'web'].includes(String(req.body.platform)) ? String(req.body.platform) : 'web';
+      const ip = String(req.ip || '').replace('::ffff:', '').slice(0, 64);
+      const initial = (await requiresApproval(matched.branch_id)) ? 'pending' : 'allowed';
+      await pool.execute(
+        `INSERT INTO devices (branch_id, device_uid, name, platform, user_agent, last_ip, last_employee_id, status)
+         VALUES (?,?,?,?,?,?,?,?)
+         ON DUPLICATE KEY UPDATE last_seen_at = NOW(), last_ip = VALUES(last_ip), user_agent = VALUES(user_agent),
+           platform = VALUES(platform), last_employee_id = VALUES(last_employee_id)`,
+        [matched.branch_id, uid, deviceNameFrom(ua, platform), platform, ua, ip, matched.id, initial]
+      );
+      invalidateAuthCache();
+      const [[dev]]: any = await pool.execute('SELECT status FROM devices WHERE branch_id = ? AND device_uid = ?', [matched.branch_id, uid]);
+      if (dev.status === 'blocked') return res.status(403).json({ error: 'This device is blocked', code: 'DEVICE_BLOCKED' });
+      // admins may always sign in (so nobody can lock themselves out); everyone else needs an allowed device
+      if (dev.status === 'pending' && matched.role !== 'admin' && (await requiresApproval(matched.branch_id))) {
+        return res.status(403).json({ error: 'This device is waiting for approval', code: 'DEVICE_PENDING' });
+      }
+    } else if (matched.role !== 'admin' && (await requiresApproval(matched.branch_id))) {
+      return res.status(403).json({ error: 'This device is waiting for approval', code: 'DEVICE_PENDING' });
+    }
+    await pool.execute('UPDATE employees SET last_login_at = NOW() WHERE id = ?', [matched.id]);
 
     const payload: Omit<JwtPayload, 'iat' | 'exp'> = {
       userId: matched.id,
@@ -85,7 +118,7 @@ router.post('/refresh', async (req: Request, res: Response) => {
     const [rows]: any = await pool.execute(
       `SELECT rt.*, e.role, e.branch_id FROM refresh_tokens rt
        JOIN employees e ON e.id = rt.employee_id
-       WHERE rt.employee_id = ? AND rt.expires_at > NOW()`,
+       WHERE rt.employee_id = ? AND rt.expires_at > NOW() AND e.is_active = 1`,
       [decoded.employeeId]
     );
 

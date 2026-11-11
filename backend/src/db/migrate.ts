@@ -157,6 +157,23 @@ const migrations: string[] = [
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
 
   // ── Orders ──────────────────────────────────────────────────────────────
+  // ── Devices that run the app (admin panel: allow / block) ───────────────
+  `CREATE TABLE IF NOT EXISTS devices (
+    id               INT AUTO_INCREMENT PRIMARY KEY,
+    branch_id        INT NOT NULL,
+    device_uid       VARCHAR(64) NOT NULL,
+    name             VARCHAR(100) NOT NULL,
+    platform         VARCHAR(20) NOT NULL DEFAULT 'web',
+    user_agent       VARCHAR(255),
+    last_ip          VARCHAR(64),
+    last_employee_id INT NULL,
+    status           ENUM('pending','allowed','blocked') NOT NULL DEFAULT 'allowed',
+    first_seen_at    DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_seen_at     DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_device (branch_id, device_uid),
+    FOREIGN KEY (branch_id) REFERENCES branches(id)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`,
+
   // ── Migration from the legacy (Delphi) database ───────────────────────────
   `CREATE TABLE IF NOT EXISTS legacy_connection (
     branch_id          INT PRIMARY KEY,
@@ -357,6 +374,14 @@ async function columnExists(conn: any, table: string, column: string): Promise<b
 
 /** Changes for databases that were created by an earlier version of this script. */
 async function upgrades(conn: any) {
+  if (!(await columnExists(conn, 'branches', 'require_device_approval'))) {
+    await conn.execute('ALTER TABLE branches ADD COLUMN require_device_approval BOOLEAN NOT NULL DEFAULT FALSE');
+    console.log('  ↑ branches.require_device_approval added');
+  }
+  if (!(await columnExists(conn, 'employees', 'last_login_at'))) {
+    await conn.execute('ALTER TABLE employees ADD COLUMN last_login_at DATETIME NULL');
+    console.log('  ↑ employees.last_login_at added');
+  }
   if (!(await columnExists(conn, 'order_items', 'voided_at'))) {
     await conn.execute('ALTER TABLE order_items ADD COLUMN voided_at DATETIME NULL AFTER void_by');
     console.log('  ↑ order_items.voided_at added');

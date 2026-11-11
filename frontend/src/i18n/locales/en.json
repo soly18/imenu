@@ -10,14 +10,22 @@
     "reports": "Reports",
     "orders": "Orders",
     "tables": "Tables",
-    "migration": "Migration"
+    "migration": "Migration",
+    "admin": "Admin"
   },
   "auth": {
     "enterPin": "Enter PIN",
     "login": "Login",
     "invalidPin": "Invalid PIN",
     "welcome": "Welcome",
-    "selectCashier": "Select Cashier"
+    "selectCashier": "Select Cashier",
+    "tooMany": "Too many attempts, wait a minute",
+    "notice": {
+      "DEVICE_PENDING": "This device is waiting for an administrator's approval. Ask an administrator to allow it, then try again.",
+      "DEVICE_BLOCKED": "This device has been blocked by an administrator.",
+      "USER_DISABLED": "Your user was switched off by an administrator.",
+      "UNREACHABLE": "Cannot reach the server. Check the Wi-Fi and the server address below."
+    }
   },
   "dashboard": {
     "title": "Dashboard",
@@ -271,5 +279,60 @@
     "found": "found",
     "checkDone": "Check finished",
     "importDone": "Import finished"
+  },
+  "theme": {
+    "title": "Theme",
+    "system": "Default",
+    "light": "Day",
+    "dark": "Night"
+  },
+  "server": {
+    "title": "Server",
+    "sameSite": "this page's server",
+    "help": "Address of the iMenu25 server on your network, for example http://192.168.1.20:3001 . Leave empty when the app is opened from the server itself.",
+    "test": "Test",
+    "ok": "Server found",
+    "fail": "No iMenu25 server answered at this address"
+  },
+  "admin": {
+    "title": "Administration",
+    "users": "Users",
+    "devices": "Devices",
+    "settings": "Settings",
+    "usersHelp": "Switch users on or off, change roles and PINs. A switched-off user is signed out at once.",
+    "addUser": "Add user",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "setPin": "Set PIN",
+    "pinHint": "PIN, 4 to 8 digits",
+    "pinChanged": "PIN changed",
+    "userCreated": "User created",
+    "lastLogin": "Last sign-in",
+    "neverLoggedIn": "Never signed in",
+    "enabled": "On",
+    "disabled": "Off",
+    "devicesHelp": "Every device that signs in appears here. Allow or block it, give it a name (for example “Bar tablet”).",
+    "noDevices": "No device has signed in yet",
+    "thisDevice": "this device",
+    "allow": "Allow",
+    "block": "Block",
+    "rename": "Rename",
+    "forgetConfirm": "Remove this device from the list? It registers again the next time someone signs in on it.",
+    "status": {
+      "pending": "Waiting",
+      "allowed": "Allowed",
+      "blocked": "Blocked"
+    },
+    "requireApproval": "New devices need approval",
+    "requireApprovalHelp": "When on, a device you have not allowed cannot be used by staff. Administrators can always sign in, so you cannot lock yourself out. Devices already in the list stay allowed.",
+    "err": {
+      "PIN_TAKEN": "This PIN is already used by someone else",
+      "BAD_PIN": "PIN must be 4 to 8 digits",
+      "SELF": "You cannot switch off or demote yourself",
+      "LAST_ADMIN": "At least one active administrator is required",
+      "NAME_REQUIRED": "A first name is required",
+      "BAD_ROLE": "Invalid role",
+      "SELF_DEVICE": "You cannot block or remove the device you are using"
+    }
   }
 }
