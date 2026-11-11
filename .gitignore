@@ -13,3 +13,5 @@ build/
 desktop/web/
 desktop/dist/
 desktop/node_modules/
+.env.local
+.env.*.local

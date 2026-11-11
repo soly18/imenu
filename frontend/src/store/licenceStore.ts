@@ -19,7 +19,7 @@ const wr = (k: string, v: string) => { try { v ? localStorage.setItem(k, v) : lo
 
 export const getConsoleUrl = () => rd(CONSOLE_KEY) || ((import.meta.env.VITE_CONSOLE_URL as string) || '');
 export const setConsoleUrl = (v: string) => wr(CONSOLE_KEY, v);
-export const getEnrol = () => rd(ENROL_KEY);
+export const getEnrol = () => rd(ENROL_KEY) || ((import.meta.env.VITE_CONSOLE_ENROL as string) || '');
 export const setEnrol = (v: string) => wr(ENROL_KEY, v.trim().toUpperCase());
 
 interface State {

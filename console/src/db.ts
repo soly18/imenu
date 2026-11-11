@@ -64,4 +64,11 @@ export async function initDb() {
       'SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?', [DB_NAME, 'customers', name]);
     if (!r.length) await pool.query(`ALTER TABLE customers ADD COLUMN ${name} ${def}`);
   }
+
+  // First start: create one customer so the very first device has somewhere to appear.
+  const [n] = await pool.query<any[]>('SELECT COUNT(*) AS n FROM customers');
+  if (!n[0].n) {
+    await pool.query('INSERT INTO customers (name, code) VALUES (?, ?)',
+      [process.env.CONSOLE_FIRST_CUSTOMER || 'My first customer', (process.env.CONSOLE_FIRST_CODE || 'FIRST').toUpperCase()]);
+  }
 }

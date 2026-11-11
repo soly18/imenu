@@ -29,6 +29,18 @@ npm run dev:console                      # http://localhost:4000  (creates datab
 ```
 For real use put it on a server with HTTPS (reverse proxy). Sign in with `CONSOLE_ADMIN_USER` / `CONSOLE_ADMIN_PASSWORD`.
 
+## Run everything on your Mac until you have a server
+```bash
+git pull && npm install
+cp console/.env.example console/.env      # DB_PASSWORD = the same MySQL password as backend/.env; set CONSOLE_ADMIN_PASSWORD
+cp frontend/.env.example frontend/.env.local
+npm run dev:all                            # backend + frontend + console together
+```
+Open http://localhost:4000 (panel), then http://localhost:5173 (the POS): the Mac's browser appears in **Devices**,
+attached to the customer "My first customer". Other devices on the same Wi-Fi: use the Mac's address
+(e.g. `http://192.168.1.20:4000`) instead of `localhost` as the console address on those devices.
+The Mac must be awake and the console running for check-ins; offline devices keep working (14-day grace).
+
 ## Connect the apps
 - Build time: set `VITE_CONSOLE_URL=https://console.yourdomain` (GitHub: repository *variable* `CONSOLE_URL`) — or
 - On the device: login screen → 🌐 Server → *Supplier console*: address + the customer's **enrolment code**

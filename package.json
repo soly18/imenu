@@ -15,7 +15,8 @@
     "build": "npm run build --workspace=frontend && npm run build --workspace=backend",
     "db:migrate": "npm run migrate --workspace=backend",
     "db:seed": "npm run seed --workspace=backend",
-    "dev:console": "npm run dev --workspace=console"
+    "dev:console": "npm run dev --workspace=console",
+    "dev:all": "concurrently \"npm run dev --workspace=backend\" \"npm run dev --workspace=frontend\" \"npm run dev --workspace=console\""
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
