@@ -9,7 +9,7 @@ import type {
 } from '@imenu25/shared';
 
 const router = Router();
-const MANAGERS = requireRole('admin', 'manager');
+const MANAGERS = requireRole('admin', 'manager', 'cashier');
 
 type Db = typeof pool | import('mysql2/promise').PoolConnection;
 

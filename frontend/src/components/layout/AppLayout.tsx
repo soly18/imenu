@@ -27,7 +27,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { to: '/tables',    label: t('nav.tables'),    icon: '🍽️' },
     { to: '/pos',       label: t('nav.pos'),       icon: '🛒' },
     { to: '/orders',    label: t('nav.orders'),    icon: '📋' },
-    ...(isManager ? [{ to: '/reports', label: t('nav.reports'), icon: '🧾' }] : []),
+    ...(isManager || employee?.role === 'cashier' ? [{ to: '/reports', label: t('nav.reports'), icon: '🧾' }] : []),
     ...(isAdmin ? [{ to: '/admin', label: t('nav.admin'), icon: '🛡️', badge: sum?.pendingDevices }] : []),
     ...(isAdmin ? [{ to: '/migration', label: t('nav.migration'), icon: '🔄' }] : []),
     { to: '/backoffice', label: t('nav.backoffice'), icon: '⚙️' },
