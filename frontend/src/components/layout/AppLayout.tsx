@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { LayoutDashboard, Armchair, ShoppingCart, ClipboardList, Receipt, ShieldCheck, DatabaseZap, Settings, Power, type LucideIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '@/store/authStore';
 import { useQuery } from '@tanstack/react-query';
@@ -24,15 +25,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { data: sum } = useQuery({ queryKey: ['admin-summary'], queryFn: adminApi.summary, enabled: isAdmin, refetchInterval: 15_000 });
   const isManager = employee?.role === 'admin' || employee?.role === 'manager';
   const feats = useLicenceStore((s) => s.features);
-  const allNav: { to: string; label: string; icon: string; badge?: number }[] = [
-    { to: '/dashboard', label: t('nav.dashboard'), icon: '📊' },
-    { to: '/tables',    label: t('nav.tables'),    icon: '🍽️' },
-    { to: '/pos',       label: t('nav.pos'),       icon: '🛒' },
-    { to: '/orders',    label: t('nav.orders'),    icon: '📋' },
-    ...(isManager || employee?.role === 'cashier' ? [{ to: '/reports', label: t('nav.reports'), icon: '🧾' }] : []),
-    ...(isAdmin ? [{ to: '/admin', label: t('nav.admin'), icon: '🛡️', badge: sum?.pendingDevices }] : []),
-    ...(isAdmin ? [{ to: '/migration', label: t('nav.migration'), icon: '🔄' }] : []),
-    { to: '/backoffice', label: t('nav.backoffice'), icon: '⚙️' },
+  const allNav: { to: string; label: string; icon: LucideIcon; badge?: number }[] = [
+    { to: '/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },
+    { to: '/tables',    label: t('nav.tables'),    icon: Armchair },
+    { to: '/pos',       label: t('nav.pos'),       icon: ShoppingCart },
+    { to: '/orders',    label: t('nav.orders'),    icon: ClipboardList },
+    ...(isManager || employee?.role === 'cashier' ? [{ to: '/reports', label: t('nav.reports'), icon: Receipt }] : []),
+    ...(isAdmin ? [{ to: '/admin', label: t('nav.admin'), icon: ShieldCheck, badge: sum?.pendingDevices }] : []),
+    ...(isAdmin ? [{ to: '/migration', label: t('nav.migration'), icon: DatabaseZap }] : []),
+    { to: '/backoffice', label: t('nav.backoffice'), icon: Settings },
   ];
   const navItems = allNav.filter((i) => feats[i.to.slice(1)] !== false);   // modules the supplier switched off disappear
 
@@ -49,14 +50,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <Link
               key={item.to}
               to={item.to}
-              className={`px-2 xl:px-3 py-1 rounded-lg font-medium transition-colors flex flex-col xl:flex-row items-center justify-center gap-0 xl:gap-2 whitespace-nowrap flex-shrink-0 min-w-[56px] max-md:flex-1 max-md:min-w-[52px] ${
+              className={`px-2 2xl:px-3 py-1 rounded-lg font-medium transition-colors flex flex-col 2xl:flex-row items-center justify-center gap-0 2xl:gap-2 whitespace-nowrap flex-shrink-0 min-w-[56px] max-md:flex-1 max-md:min-w-[52px] ${
                 location.pathname.startsWith(item.to)
                   ? 'bg-brand-500 text-white'
                   : 'text-gray-300 hover:bg-gray-800'
               }`}
             >
-              <span className="text-base xl:text-sm leading-none relative">{item.icon}{!!item.badge && <span className="absolute -top-1 -end-2 bg-red-600 text-white text-[9px] font-bold rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center">{item.badge}</span>}</span>
-              <span className="text-[10px] xl:text-sm leading-tight">{item.label}</span>
+              <span className="leading-none relative"><item.icon className="w-6 h-6 2xl:w-5 2xl:h-5" strokeWidth={1.75} aria-hidden="true" />{!!item.badge && <span className="absolute -top-1 -end-2 bg-red-600 text-white text-[9px] font-bold rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center">{item.badge}</span>}</span>
+              <span className="text-[10px] 2xl:text-sm leading-tight">{item.label}</span>
             </Link>
           ))}
         </nav>
@@ -94,7 +95,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             onClick={handleLogout}
             className="text-gray-400 hover:text-white text-sm px-2 md:px-3 py-1.5 min-h-[40px] rounded-lg hover:bg-gray-800 transition-colors"
           >
-            <span className="md:hidden" aria-label={t('nav.logout')}>⏻</span><span className="hidden md:inline">{t('nav.logout')}</span>
+            <Power className="md:hidden w-5 h-5" strokeWidth={1.75} aria-label={t('nav.logout')} /><span className="hidden md:inline">{t('nav.logout')}</span>
           </button>
         </div>
       </header>
