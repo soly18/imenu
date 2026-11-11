@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '@/store/authStore';
 import { useQuery } from '@tanstack/react-query';
+import { useLicenceStore } from '@/store/licenceStore';
 import { authApi, adminApi } from '@/api';
 import ThemeSwitcher from '@/components/common/ThemeSwitcher';
 
@@ -22,7 +23,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const isAdmin = employee?.role === 'admin';
   const { data: sum } = useQuery({ queryKey: ['admin-summary'], queryFn: adminApi.summary, enabled: isAdmin, refetchInterval: 15_000 });
   const isManager = employee?.role === 'admin' || employee?.role === 'manager';
-  const navItems: { to: string; label: string; icon: string; badge?: number }[] = [
+  const feats = useLicenceStore((s) => s.features);
+  const allNav: { to: string; label: string; icon: string; badge?: number }[] = [
     { to: '/dashboard', label: t('nav.dashboard'), icon: '📊' },
     { to: '/tables',    label: t('nav.tables'),    icon: '🍽️' },
     { to: '/pos',       label: t('nav.pos'),       icon: '🛒' },
@@ -32,6 +34,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     ...(isAdmin ? [{ to: '/migration', label: t('nav.migration'), icon: '🔄' }] : []),
     { to: '/backoffice', label: t('nav.backoffice'), icon: '⚙️' },
   ];
+  const navItems = allNav.filter((i) => feats[i.to.slice(1)] !== false);   // modules the supplier switched off disappear
 
   return (
     <div className="min-h-screen flex flex-col">

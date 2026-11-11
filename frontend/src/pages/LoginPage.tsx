@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 import ThemeSwitcher from '@/components/common/ThemeSwitcher';
 import { authApi } from '@/api';
+import { getConsoleUrl, setConsoleUrl, getEnrol, setEnrol, useLicenceStore } from '@/store/licenceStore';
 import { NOTICE_KEY, getServerUrl, setServerUrl } from '@/api/client';
 import { useAuthStore } from '@/store/authStore';
 
@@ -132,6 +133,8 @@ function ServerDialog({ onClose }: { onClose: () => void }) {
   const { t } = useTranslation();
   const [url, setUrl] = useState(getServerUrl());
   const [result, setResult] = useState<'ok' | 'fail' | 'busy' | null>(null);
+  const [consoleUrl, setConsoleUrlState] = useState(getConsoleUrl());
+  const [enrol, setEnrolState] = useState(getEnrol());
   const clean = () => url.trim().replace(/\/+$/, '').replace(/\/api$/, '');
   const test = async () => {
     setResult('busy');
@@ -150,12 +153,23 @@ function ServerDialog({ onClose }: { onClose: () => void }) {
         <input dir="ltr" value={url} onChange={(e) => { setUrl(e.target.value); setResult(null); }} placeholder="http://192.168.1.20:3001"
           autoCapitalize="off" autoCorrect="off" spellCheck={false}
           className="w-full min-h-[48px] rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-3" />
+        <details className="text-sm" open={!!consoleUrl}>
+          <summary className="cursor-pointer text-gray-500 dark:text-gray-400 min-h-[32px]">{t('server.supplier')}</summary>
+          <div className="space-y-2 pt-2">
+            <input dir="ltr" value={consoleUrl} onChange={(e) => setConsoleUrlState(e.target.value)} placeholder="https://console.example.com"
+              autoCapitalize="off" autoCorrect="off" spellCheck={false}
+              className="w-full min-h-[44px] rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-3" />
+            <input dir="ltr" value={enrol} onChange={(e) => setEnrolState(e.target.value)} placeholder={t('server.customerCode')}
+              autoCapitalize="characters" autoCorrect="off" spellCheck={false}
+              className="w-full min-h-[44px] rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-3 uppercase" />
+          </div>
+        </details>
         {result && <p className={`text-sm ${result === 'ok' ? 'text-green-700 dark:text-green-300' : result === 'fail' ? 'text-red-700 dark:text-red-300' : 'text-gray-500'}`}>
           {result === 'ok' ? '✅ ' + t('server.ok') : result === 'fail' ? '❌ ' + t('server.fail') : '…'}
         </p>}
         <div className="flex gap-2 pt-1">
           <button onClick={test} className="flex-1 min-h-[48px] rounded-xl border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100 font-semibold">{t('server.test')}</button>
-          <button onClick={() => { setServerUrl(clean()); onClose(); }} className="flex-1 min-h-[48px] rounded-xl bg-brand-500 text-white font-semibold">{t('common.save')}</button>
+          <button onClick={() => { setServerUrl(clean()); setConsoleUrl(consoleUrl.trim().replace(/\/+$/, '')); setEnrol(enrol); useLicenceStore.getState().check(); onClose(); }} className="flex-1 min-h-[48px] rounded-xl bg-brand-500 text-white font-semibold">{t('common.save')}</button>
         </div>
       </div>
     </div>

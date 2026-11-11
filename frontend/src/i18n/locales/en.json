@@ -292,7 +292,9 @@
     "help": "Address of the iMenu25 server on your network, for example http://192.168.1.20:3001 . Leave empty when the app is opened from the server itself.",
     "test": "Test",
     "ok": "Server found",
-    "fail": "No iMenu25 server answered at this address"
+    "fail": "No iMenu25 server answered at this address",
+    "supplier": "Supplier console (licence)",
+    "customerCode": "Customer code"
   },
   "admin": {
     "title": "Administration",
@@ -334,5 +336,12 @@
       "BAD_ROLE": "Invalid role",
       "SELF_DEVICE": "You cannot block or remove the device you are using"
     }
+  },
+  "licence": {
+    "blocked": "This device is blocked",
+    "expired": "Licence expired",
+    "pending": "Waiting for approval",
+    "deviceId": "Device ID",
+    "retry": "Check again"
   }
 }

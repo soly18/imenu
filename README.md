@@ -65,3 +65,6 @@ Hebrew (RTL), English, Arabic (RTL), Russian — switch from the login screen or
 
 ## Android app, admin panel, themes
 See [docs/android-and-admin.md](docs/android-and-admin.md).
+
+## Vendor console (devices, licences, features)
+See [docs/console.md](docs/console.md).

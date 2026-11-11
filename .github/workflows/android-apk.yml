@@ -19,6 +19,8 @@ jobs:
       - run: npm ci
       - name: Build web app and sync into the Android project
         working-directory: frontend
+        env:
+          VITE_CONSOLE_URL: ${{ vars.CONSOLE_URL }}
         run: npm run android:sync
       - name: Assemble debug APK
         working-directory: frontend/android
