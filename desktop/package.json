@@ -1,0 +1,22 @@
+{
+  "name": "imenu25-desktop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "iMenu25 desktop app for Windows, Linux and macOS",
+  "main": "main.js",
+  "author": "iMenu25",
+  "scripts": {
+    "start": "electron .",
+    "prepare-web": "cd ../frontend && npm run build && rm -rf ../desktop/web && cp -r dist ../desktop/web",
+    "dist": "npm run prepare-web && electron-builder"
+  },
+  "devDependencies": { "electron": "^31.7.7", "electron-builder": "^24.13.3" },
+  "build": {
+    "appId": "com.imenu25.pos",
+    "productName": "iMenu25",
+    "files": ["main.js", "web/**/*"],
+    "win": { "target": ["nsis", "portable"] },
+    "linux": { "target": ["AppImage", "deb"], "category": "Office" },
+    "mac": { "target": ["dmg"], "category": "public.app-category.business" }
+  }
+}

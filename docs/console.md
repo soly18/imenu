@@ -12,7 +12,8 @@ customer devices (APK / browser) ──check-in──►  Console (your server) 
   app version, customer, status, licence date, last IP, online dot (seen in the last 10 min).
 - **S/N**: Android 10+ does not let apps read the hardware serial. Each device gets a stable *install ID*
   (+ Android ID, model); you type the S/N from the device label into the panel once.
-- **Customers**: name, *enrolment code*, licence-until date, active switch, feature switches.
+- **Customers**: customer no. (C-0001…), name, business/VAT ID, contact person, 2 phones, email, website, address, city, country,
+  notes, *enrolment code*, licence-until date, active switch, feature switches — and the list of that customer's devices with their S/N.
 - **Enable / disable**: set a device (or a whole customer) to Blocked → the app shows a lock screen within 5 minutes.
 - **Licence expiry**: device date overrides the customer date; after it the app locks. Empty = no expiry.
 - **Features**: per customer, optionally overridden per device (Same as customer / On / Off) for

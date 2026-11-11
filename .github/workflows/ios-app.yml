@@ -1,0 +1,21 @@
+name: Build iOS app (simulator build, unsigned)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      - name: Build web app and sync into the iOS project
+        working-directory: frontend
+        env:
+          VITE_CONSOLE_URL: ${{ vars.CONSOLE_URL }}
+        run: npm run build && npx cap sync ios
+      - name: Compile (checks the project builds; installing on a real iPhone needs your Apple signing, see docs)
+        working-directory: frontend/ios/App
+        run: xcodebuild -project App.xcodeproj -scheme App -sdk iphonesimulator -configuration Debug CODE_SIGNING_ALLOWED=NO build

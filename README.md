@@ -68,3 +68,6 @@ See [docs/android-and-admin.md](docs/android-and-admin.md).
 
 ## Vendor console (devices, licences, features)
 See [docs/console.md](docs/console.md).
+
+## Windows / Linux / macOS / Android / iOS
+See [docs/cross-platform.md](docs/cross-platform.md).

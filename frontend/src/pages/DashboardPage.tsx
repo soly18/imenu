@@ -7,9 +7,9 @@ import { useAuthStore } from '@/store/authStore';
 
 function KPICard({ label, value, sub, color }: { label: string; value: string | number; sub?: string; color?: string }) {
   return (
-    <div className={`bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 dark:border-gray-700 ${color || ''}`}>
-      <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 font-medium">{label}</p>
-      <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 mt-1">{value}</p>
+    <div className={`bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 ${color || ''}`}>
+      <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{label}</p>
+      <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-1">{value}</p>
       {sub && <p className="text-xs text-gray-400 mt-1">{sub}</p>}
     </div>
   );
@@ -48,8 +48,8 @@ export default function DashboardPage() {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">{t('dashboard.title')}</h1>
-        <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('dashboard.title')}</h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">
           {employee?.firstName} {employee?.lastName} — {employee?.role}
         </p>
       </div>
@@ -79,8 +79,8 @@ export default function DashboardPage() {
       </div>
 
       {/* Clock In/Out */}
-      <div className="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 dark:border-gray-700 mb-6">
-        <h2 className="font-semibold text-gray-800 dark:text-gray-100 dark:text-gray-100 mb-4">{t('dashboard.clockedIn')}</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 mb-6">
+        <h2 className="font-semibold text-gray-800 dark:text-gray-100 mb-4">{t('dashboard.clockedIn')}</h2>
         <div className="flex gap-3">
           <button
             onClick={() => clockIn.mutate()}
@@ -104,13 +104,13 @@ export default function DashboardPage() {
         <div className="grid grid-cols-2 gap-4">
           <button
             onClick={() => navigate('/reports')}
-            className="pos-btn bg-blue-50 dark:bg-blue-900/30 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 dark:text-blue-300 border border-blue-200 dark:border-blue-800 dark:border-blue-800 h-16 text-base hover:bg-blue-100"
+            className="pos-btn bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 h-16 text-base hover:bg-blue-100"
           >
             📊 {t('dashboard.xReport')}
           </button>
           <button
             onClick={() => navigate('/reports?run=z')}
-            className="pos-btn bg-purple-50 dark:bg-purple-900/30 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 dark:text-purple-300 border border-purple-200 dark:border-purple-800 dark:border-purple-800 h-16 text-base hover:bg-purple-100"
+            className="pos-btn bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 h-16 text-base hover:bg-purple-100"
           >
             📋 {t('dashboard.zReport')}
           </button>

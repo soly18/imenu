@@ -15,13 +15,13 @@ import { fmtMoney } from '@/utils/format';
  * orders.status.* in the 4 locale files. Unknown statuses fall back to FALLBACK.
  */
 const STYLE: Record<string, { bar: string; badge: string; chip: string; chipOn: string }> = {
-  open:      { bar: 'border-s-blue-500',  badge: 'bg-blue-100 dark:bg-blue-900/40 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 dark:text-blue-200',   chip: 'bg-blue-50 dark:bg-blue-900/30 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 dark:text-blue-200 border-blue-200 dark:border-blue-800 dark:border-blue-800',     chipOn: 'bg-blue-600 text-white border-blue-600' },
-  sent:      { bar: 'border-s-amber-500', badge: 'bg-amber-100 dark:bg-amber-900/40 dark:bg-amber-900/40 text-amber-800 dark:text-amber-200 dark:text-amber-200', chip: 'bg-amber-50 dark:bg-amber-900/30 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 dark:text-amber-200 border-amber-200 dark:border-amber-800 dark:border-amber-800',  chipOn: 'bg-amber-500 text-white border-amber-500' },
-  paid:      { bar: 'border-s-green-500', badge: 'bg-green-100 dark:bg-green-900/40 dark:bg-green-900/40 text-green-800 dark:text-green-200 dark:text-green-200', chip: 'bg-green-50 dark:bg-green-900/30 dark:bg-green-900/30 text-green-800 dark:text-green-200 dark:text-green-200 border-green-200 dark:border-green-800 dark:border-green-800',  chipOn: 'bg-green-600 text-white border-green-600' },
-  cancelled: { bar: 'border-s-gray-400',  badge: 'bg-gray-200 dark:bg-gray-600 dark:bg-gray-600 text-gray-700 dark:text-gray-200 dark:text-gray-200',   chip: 'bg-gray-100 dark:bg-gray-700 dark:bg-gray-700 text-gray-700 dark:text-gray-200 dark:text-gray-200 border-gray-300 dark:border-gray-600 dark:border-gray-600',    chipOn: 'bg-gray-600 text-white border-gray-600' },
-  void:      { bar: 'border-s-red-500',   badge: 'bg-red-100 dark:bg-red-900/40 dark:bg-red-900/40 text-red-800 dark:text-red-200 dark:text-red-200',     chip: 'bg-red-50 dark:bg-red-900/30 dark:bg-red-900/30 text-red-800 dark:text-red-200 dark:text-red-200 border-red-200 dark:border-red-800 dark:border-red-800',        chipOn: 'bg-red-600 text-white border-red-600' },
+  open:      { bar: 'border-s-blue-500',  badge: 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200',   chip: 'bg-blue-50 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 border-blue-200 dark:border-blue-800',     chipOn: 'bg-blue-600 text-white border-blue-600' },
+  sent:      { bar: 'border-s-amber-500', badge: 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-200', chip: 'bg-amber-50 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 border-amber-200 dark:border-amber-800',  chipOn: 'bg-amber-500 text-white border-amber-500' },
+  paid:      { bar: 'border-s-green-500', badge: 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200', chip: 'bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-200 border-green-200 dark:border-green-800',  chipOn: 'bg-green-600 text-white border-green-600' },
+  cancelled: { bar: 'border-s-gray-400',  badge: 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200',   chip: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600',    chipOn: 'bg-gray-600 text-white border-gray-600' },
+  void:      { bar: 'border-s-red-500',   badge: 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200',     chip: 'bg-red-50 dark:bg-red-900/30 text-red-800 dark:text-red-200 border-red-200 dark:border-red-800',        chipOn: 'bg-red-600 text-white border-red-600' },
 };
-const FALLBACK = { bar: 'border-s-purple-500', badge: 'bg-purple-100 dark:bg-purple-900/40 dark:bg-purple-900/40 text-purple-800 dark:text-purple-200 dark:text-purple-200', chip: 'bg-purple-50 dark:bg-purple-900/30 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 dark:text-purple-200 border-purple-200 dark:border-purple-800 dark:border-purple-800', chipOn: 'bg-purple-600 text-white border-purple-600' };
+const FALLBACK = { bar: 'border-s-purple-500', badge: 'bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-200', chip: 'bg-purple-50 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 border-purple-200 dark:border-purple-800', chipOn: 'bg-purple-600 text-white border-purple-600' };
 const st = (s: string) => STYLE[s] ?? FALLBACK;
 
 const ORDER: string[] = ['open', 'sent', 'paid', 'cancelled', 'void'];
@@ -73,15 +73,15 @@ export default function OrdersPage() {
   };
 
   const chips: { key: OrderStatus | 'all' | 'active'; label: string; n: number; cls: string; on: string }[] = [
-    { key: 'active', label: t('orders.active'), n: (counts.open || 0) + (counts.sent || 0), cls: 'bg-white dark:bg-gray-800 dark:bg-gray-800 text-gray-800 dark:text-gray-100 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:border-gray-600', on: 'bg-gray-900 text-white border-gray-900 dark:bg-gray-100 dark:text-gray-900 dark:border-gray-100 dark:bg-gray-100 dark:text-gray-900 dark:border-gray-100' },
+    { key: 'active', label: t('orders.active'), n: (counts.open || 0) + (counts.sent || 0), cls: 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border-gray-300 dark:border-gray-600', on: 'bg-gray-900 text-white border-gray-900 dark:bg-gray-100 dark:text-gray-900 dark:border-gray-100 dark:bg-gray-100 dark:text-gray-900 dark:border-gray-100' },
     ...ORDER.map((s) => ({ key: s as OrderStatus, label: t(`orders.status.${s}`), n: counts[s] || 0, cls: st(s).chip, on: st(s).chipOn })),
-    { key: 'all', label: t('orders.all'), n: data.length, cls: 'bg-white dark:bg-gray-800 dark:bg-gray-800 text-gray-800 dark:text-gray-100 dark:text-gray-100 border-gray-300 dark:border-gray-600 dark:border-gray-600', on: 'bg-gray-900 text-white border-gray-900 dark:bg-gray-100 dark:text-gray-900 dark:border-gray-100 dark:bg-gray-100 dark:text-gray-900 dark:border-gray-100' },
+    { key: 'all', label: t('orders.all'), n: data.length, cls: 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border-gray-300 dark:border-gray-600', on: 'bg-gray-900 text-white border-gray-900 dark:bg-gray-100 dark:text-gray-900 dark:border-gray-100 dark:bg-gray-100 dark:text-gray-900 dark:border-gray-100' },
   ];
 
   return (
-    <div className="h-[calc(100vh-56px)] flex flex-col">
-      <div className="px-4 pt-4 pb-3 bg-white dark:bg-gray-800 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 dark:border-gray-700 flex flex-wrap items-center gap-3">
-        <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 me-2">{t('orders.title')}</h1>
+    <div className="h-[calc(100dvh-112px)] md:h-[calc(100dvh-56px)] flex flex-col">
+      <div className="px-4 pt-4 pb-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex flex-wrap items-center gap-3">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 me-2">{t('orders.title')}</h1>
         <DragScroll className="flex gap-2 overflow-x-auto flex-1 min-w-0 py-1">
           {chips.map((c) => (
             <button
@@ -107,31 +107,31 @@ export default function OrdersPage() {
           <p className="m-auto text-gray-400 text-lg">{t('orders.empty')}</p>
         )}
         {columns.map((col) => (
-          <section key={col.id} className="w-72 flex-shrink-0 flex flex-col bg-gray-100 dark:bg-gray-700 dark:bg-gray-700 rounded-2xl min-h-0">
+          <section key={col.id} className="w-72 flex-shrink-0 flex flex-col bg-gray-100 dark:bg-gray-700 rounded-2xl min-h-0">
             <header className="px-4 py-3 flex items-center justify-between">
-              <h2 className="font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 truncate">
-                {col.name}{col.id === me?.id && <span className="text-xs text-brand-600 dark:text-brand-400 dark:text-brand-400 font-medium"> · {t('orders.me')}</span>}
+              <h2 className="font-bold text-gray-900 dark:text-gray-100 truncate">
+                {col.name}{col.id === me?.id && <span className="text-xs text-brand-600 dark:text-brand-400 font-medium"> · {t('orders.me')}</span>}
               </h2>
-              <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">{col.orders.length}</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">{col.orders.length}</span>
             </header>
             <div data-vscroll className="flex-1 min-h-0 overflow-y-auto px-2 pb-2 space-y-2">
               {col.orders.map((o) => (
                 <button
                   key={o.id}
                   onClick={() => openCard(o)}
-                  className={`w-full text-start bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-xl border-s-8 ${st(o.status).bar} shadow-sm p-3 min-h-[76px] active:scale-[0.99]`}
+                  className={`w-full text-start bg-white dark:bg-gray-800 rounded-xl border-s-8 ${st(o.status).bar} shadow-sm p-3 min-h-[76px] active:scale-[0.99]`}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">
+                    <span className="font-bold text-gray-900 dark:text-gray-100">
                       {o.tableLabel ? `${t('eod.table')} ${o.tableLabel}` : `#${o.orderNumber.slice(-5)}`}
                     </span>
                     <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${st(o.status).badge}`}>
                       {t(`orders.status.${o.status}`, { defaultValue: o.status })}
                     </span>
                   </div>
-                  <div className="mt-1 flex items-center justify-between text-sm text-gray-600 dark:text-gray-300 dark:text-gray-300">
+                  <div className="mt-1 flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
                     <span>{o.itemCount} {t('orders.items')} · <bdi>{time(o.openedAt)}</bdi></span>
-                    <span dir="ltr" className="font-semibold text-gray-900 dark:text-gray-100 dark:text-gray-100 tabular-nums">
+                    <span dir="ltr" className="font-semibold text-gray-900 dark:text-gray-100 tabular-nums">
                       {fmtMoney(o.total, lng, t('common.currency'))}
                     </span>
                   </div>
@@ -152,7 +152,7 @@ function OrderDetail({ id, onClose }: { id: number; onClose: () => void }) {
   const { data } = useQuery<any>({ queryKey: ['order', id], queryFn: () => ordersApi.get(id) });
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-3xl w-full max-w-md p-6 max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-white dark:bg-gray-800 rounded-3xl w-full max-w-md p-6 max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
         {!data ? <p className="text-gray-400">{t('common.loading')}</p> : (
           <>
             <div className="flex items-center justify-between mb-3">
@@ -163,7 +163,7 @@ function OrderDetail({ id, onClose }: { id: number; onClose: () => void }) {
                 {t(`orders.status.${data.status}`, { defaultValue: data.status })}
               </span>
             </div>
-            <DragScroll className="flex-1 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-700 dark:divide-gray-700 border border-gray-100 dark:border-gray-700 dark:border-gray-700 rounded-xl">
+            <DragScroll className="flex-1 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-700 border border-gray-100 dark:border-gray-700 rounded-xl">
               {data.items.map((it: any) => (
                 <div key={it.id} className="px-3 py-2 flex justify-between gap-3 text-sm">
                   <span>{it.quantity} × {it.namePrimary}</span>
@@ -177,7 +177,7 @@ function OrderDetail({ id, onClose }: { id: number; onClose: () => void }) {
             </div>
           </>
         )}
-        <button onClick={onClose} className="pos-btn w-full bg-gray-100 dark:bg-gray-700 dark:bg-gray-700 text-gray-700 dark:text-gray-200 dark:text-gray-200 mt-4">{t('common.close')}</button>
+        <button onClick={onClose} className="pos-btn w-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 mt-4">{t('common.close')}</button>
       </div>
     </div>
   );

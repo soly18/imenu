@@ -12,9 +12,9 @@ import { fmtMoney } from '@/utils/format';
 
 // Same colours as the orders board: free = white, open = blue, sent to kitchen = amber.
 const LOOK: Record<string, string> = {
-  free: 'bg-white dark:bg-gray-800 dark:bg-gray-800 border-gray-300 dark:border-gray-600 dark:border-gray-600 text-gray-700 dark:text-gray-200 dark:text-gray-200',
-  open: 'bg-blue-50 dark:bg-blue-900/30 dark:bg-blue-900/30 border-blue-500 text-blue-900 dark:text-blue-100 dark:text-blue-100',
-  sent: 'bg-amber-50 dark:bg-amber-900/30 dark:bg-amber-900/30 border-amber-500 text-amber-900 dark:text-amber-100 dark:text-amber-100',
+  free: 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200',
+  open: 'bg-blue-50 dark:bg-blue-900/30 border-blue-500 text-blue-900 dark:text-blue-100',
+  sent: 'bg-amber-50 dark:bg-amber-900/30 border-amber-500 text-amber-900 dark:text-amber-100',
 };
 
 export default function TablesPage() {
@@ -53,19 +53,19 @@ export default function TablesPage() {
   const h = Math.max(400, ...(plan?.tables.map((x) => x.y + x.height) ?? [0])) + 60;
 
   return (
-    <div className="h-[calc(100vh-56px)] flex flex-col">
-      <div className="px-4 py-3 bg-white dark:bg-gray-800 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 dark:border-gray-700 flex flex-wrap items-center gap-3">
-        <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 me-2">{t('tables.title')}</h1>
+    <div className="h-[calc(100dvh-112px)] md:h-[calc(100dvh-56px)] flex flex-col">
+      <div className="px-4 py-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex flex-wrap items-center gap-3">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 me-2">{t('tables.title')}</h1>
         <DragScroll className="flex gap-2 overflow-x-auto flex-1 min-w-0 py-1">
           {plans.map((p) => (
             <button key={p.id} onClick={() => setPlanId(p.id)}
               className={`flex-shrink-0 min-h-[44px] px-4 rounded-full border text-sm font-semibold ${
-                plan?.id === p.id ? 'bg-gray-900 text-white border-gray-900 dark:bg-gray-100 dark:text-gray-900 dark:border-gray-100 dark:bg-gray-100 dark:text-gray-900 dark:border-gray-100' : 'bg-white dark:bg-gray-800 dark:bg-gray-800 text-gray-700 dark:text-gray-200 dark:text-gray-200 border-gray-300 dark:border-gray-600 dark:border-gray-600'}`}>
+                plan?.id === p.id ? 'bg-gray-900 text-white border-gray-900 dark:bg-gray-100 dark:text-gray-900 dark:border-gray-100 dark:bg-gray-100 dark:text-gray-900 dark:border-gray-100' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600'}`}>
               {p.name}
             </button>
           ))}
         </DragScroll>
-        <div className="flex items-center gap-3 text-xs text-gray-600 dark:text-gray-300 dark:text-gray-300">
+        <div className="flex items-center gap-3 text-xs text-gray-600 dark:text-gray-300">
           {(['free', 'open', 'sent'] as const).map((k) => (
             <span key={k} className="flex items-center gap-1">
               <span className={`w-3 h-3 rounded border-2 ${LOOK[k]}`} />{t(`tables.${k}`)}
@@ -74,7 +74,7 @@ export default function TablesPage() {
         </div>
       </div>
 
-      <DragScroll dir="ltr" className="flex-1 min-h-0 overflow-auto bg-gray-50 dark:bg-gray-900 dark:bg-gray-900">
+      <DragScroll dir="ltr" className="flex-1 min-h-0 overflow-auto bg-gray-50 dark:bg-gray-900">
         {isLoading && <p className="p-6 text-gray-400">{t('common.loading')}</p>}
         {!isLoading && !plan && <p className="p-6 text-gray-400">{t('tables.empty')}</p>}
         {plan && (

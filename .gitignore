@@ -10,3 +10,6 @@ build/
 !backend/src/db/*.sql
 !_previous-session/**/*.sql
 !tools/legacy/*.sql
+desktop/web/
+desktop/dist/
+desktop/node_modules/

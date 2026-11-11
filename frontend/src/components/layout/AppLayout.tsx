@@ -39,17 +39,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Top nav */}
-      <header className="h-14 bg-gray-900 dark:bg-gray-950 dark:border-b dark:border-gray-800 text-white flex items-center px-4 gap-4 shadow-lg z-40">
-        <div className="font-bold text-brand-400 text-lg me-4">
+      <header className="h-14 bg-gray-900 dark:bg-gray-950 dark:border-b dark:border-gray-800 text-white flex items-center px-3 md:px-4 gap-2 md:gap-4 shadow-lg z-40">
+        <div className="font-bold text-brand-400 text-lg md:me-4">
           iMenu<span className="text-white">25</span>
         </div>
 
-        <nav className="flex gap-1 flex-1 min-w-0 overflow-x-auto">
+        <nav className="fixed bottom-0 inset-x-0 z-40 h-14 pb-[env(safe-area-inset-bottom)] box-content bg-gray-900 dark:bg-gray-950 border-t border-gray-800 flex gap-1 px-1 overflow-x-auto md:static md:h-auto md:pb-0 md:box-border md:bg-transparent md:dark:bg-transparent md:border-0 md:px-0 md:flex-1 md:min-w-0">
           {navItems.map((item) => (
             <Link
               key={item.to}
               to={item.to}
-              className={`px-2 xl:px-3 py-1 rounded-lg font-medium transition-colors flex flex-col xl:flex-row items-center justify-center gap-0 xl:gap-2 whitespace-nowrap flex-shrink-0 min-w-[56px] ${
+              className={`px-2 xl:px-3 py-1 rounded-lg font-medium transition-colors flex flex-col xl:flex-row items-center justify-center gap-0 xl:gap-2 whitespace-nowrap flex-shrink-0 min-w-[56px] max-md:flex-1 max-md:min-w-[52px] ${
                 location.pathname.startsWith(item.to)
                   ? 'bg-brand-500 text-white'
                   : 'text-gray-300 hover:bg-gray-800'
@@ -61,13 +61,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           ))}
         </nav>
 
-        <div className="flex items-center gap-3 ms-auto flex-shrink-0">
+        <div className="flex items-center gap-2 md:gap-3 ms-auto flex-shrink-0">
           <ThemeSwitcher compact />
           {/* Language picker */}
           <select
             value={i18n.language}
             onChange={(e) => i18n.changeLanguage(e.target.value)}
-            className="bg-gray-800 text-gray-300 text-xs rounded-lg px-2 py-1 border border-gray-700"
+            className="bg-gray-800 text-gray-300 text-xs rounded-lg px-1 md:px-2 py-1 border border-gray-700 max-w-[78px] md:max-w-none"
           >
             <option value="he">עברית</option>
             <option value="en">English</option>
@@ -77,11 +77,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
           {/* Employee */}
           {employee && (
-            <span className="flex items-center gap-2 bg-gray-800 rounded-full ps-1 pe-3 py-1 whitespace-nowrap" title={t(`roles.${employee.role}`)}>
+            <span className="flex items-center gap-2 bg-gray-800 rounded-full ps-1 md:pe-3 pe-1 py-1 whitespace-nowrap" title={t(`roles.${employee.role}`)}>
               <span className="w-7 h-7 rounded-full bg-brand-500 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
                 {(employee.firstName[0] || '') + (employee.lastName?.[0] || '')}
               </span>
-              <span className="text-sm text-white font-medium truncate max-w-[9rem]">
+              <span className="hidden md:inline text-sm text-white font-medium truncate max-w-[9rem]">
                 {employee.firstName} {employee.lastName}
               </span>
               <span className="text-[10px] uppercase tracking-wide text-brand-300 hidden 2xl:inline">
@@ -92,15 +92,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
           <button
             onClick={handleLogout}
-            className="text-gray-400 hover:text-white text-sm px-3 py-1.5 rounded-lg hover:bg-gray-800 transition-colors"
+            className="text-gray-400 hover:text-white text-sm px-2 md:px-3 py-1.5 min-h-[40px] rounded-lg hover:bg-gray-800 transition-colors"
           >
-            {t('nav.logout')}
+            <span className="md:hidden" aria-label={t('nav.logout')}>⏻</span><span className="hidden md:inline">{t('nav.logout')}</span>
           </button>
         </div>
       </header>
 
       {/* Page content */}
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 pb-[calc(3.5rem+env(safe-area-inset-bottom))] md:pb-0">{children}</main>
     </div>
   );
 }

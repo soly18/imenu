@@ -12,3 +12,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <App />
   </React.StrictMode>
 );
+
+// Installable web app (Windows / Linux / macOS / Android / iOS browsers): offline shell. Not inside the native wrappers.
+if ('serviceWorker' in navigator && import.meta.env.PROD && !(window as any).Capacitor?.isNativePlatform?.() && !(window as any).imenuDesktop) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+}

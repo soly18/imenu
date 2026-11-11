@@ -5,7 +5,7 @@ import { fmtMoney, fmtDateTime } from '@/utils/format';
 function Money({ value, signed }: { value: number; signed?: boolean }) {
   const { t, i18n } = useTranslation();
   // For differences: shortage red, surplus amber, exact green
-  const tone = signed ? (value < 0 ? 'text-red-600 dark:text-red-400 dark:text-red-400' : value > 0 ? 'text-amber-600 dark:text-amber-400 dark:text-amber-400' : 'text-green-600 dark:text-green-400 dark:text-green-400') : '';
+  const tone = signed ? (value < 0 ? 'text-red-600 dark:text-red-400' : value > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-green-600 dark:text-green-400') : '';
   return (
     <span dir="ltr" className={`tabular-nums ${tone}`}>
       {fmtMoney(value, i18n.language, t('common.currency'))}
@@ -15,18 +15,18 @@ function Money({ value, signed }: { value: number; signed?: boolean }) {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 dark:border-gray-700 shadow-sm overflow-hidden break-inside-avoid">
-      <h3 className="px-5 py-3 font-semibold text-gray-800 dark:text-gray-100 dark:text-gray-100 bg-gray-50 dark:bg-gray-900 dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700 dark:border-gray-700">{title}</h3>
+    <section className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden break-inside-avoid">
+      <h3 className="px-5 py-3 font-semibold text-gray-800 dark:text-gray-100 bg-gray-50 dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700">{title}</h3>
       <div className="overflow-x-auto">{children}</div>
     </section>
   );
 }
 
-const TH = 'px-5 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-400 text-start';
+const TH = 'px-5 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 text-start';
 const NUM = 'px-5 py-2 text-end tabular-nums';
 const TXT = 'px-5 py-2 text-start';
-const ROW = 'border-t border-gray-100 dark:border-gray-700 dark:border-gray-700';
-const TOTAL = 'border-t-2 border-gray-200 dark:border-gray-700 dark:border-gray-700 font-semibold bg-gray-50 dark:bg-gray-900 dark:bg-gray-900';
+const ROW = 'border-t border-gray-100 dark:border-gray-700';
+const TOTAL = 'border-t-2 border-gray-200 dark:border-gray-700 font-semibold bg-gray-50 dark:bg-gray-900';
 
 export default function ReportView({ report }: { report: EodReport }) {
   const { t, i18n } = useTranslation();
@@ -55,12 +55,12 @@ export default function ReportView({ report }: { report: EodReport }) {
   return (
     <div className="space-y-4">
       {/* Heading */}
-      <div className="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 dark:border-gray-700 shadow-sm p-5">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-5">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">{title}</h2>
-          <span className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{report.branchName}</span>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{title}</h2>
+          <span className="text-sm text-gray-500 dark:text-gray-400">{report.branchName}</span>
         </div>
-        <p className="text-sm text-gray-600 dark:text-gray-300 dark:text-gray-300 mt-1">
+        <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
           {t('eod.from')} <bdi>{fmtDateTime(report.periodStart, lng)}</bdi>{' '}
           {t('eod.to')} <bdi>{fmtDateTime(report.periodEnd, lng)}</bdi>
         </p>
@@ -74,10 +74,10 @@ export default function ReportView({ report }: { report: EodReport }) {
         {cards.map((c) => (
           <div
             key={c.label}
-            className={`rounded-2xl border p-4 ${c.strong ? 'bg-brand-50 dark:bg-brand-900/30 dark:bg-brand-900/30 border-brand-100' : 'bg-white dark:bg-gray-800 dark:bg-gray-800 border-gray-100 dark:border-gray-700 dark:border-gray-700'}`}
+            className={`rounded-2xl border p-4 ${c.strong ? 'bg-brand-50 dark:bg-brand-900/30 border-brand-100' : 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700'}`}
           >
-            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">{c.label}</p>
-            <p className={`mt-1 font-bold ${c.strong ? 'text-2xl text-brand-700 dark:text-brand-300 dark:text-brand-300' : 'text-xl text-gray-900 dark:text-gray-100 dark:text-gray-100'}`}>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{c.label}</p>
+            <p className={`mt-1 font-bold ${c.strong ? 'text-2xl text-brand-700 dark:text-brand-300' : 'text-xl text-gray-900 dark:text-gray-100'}`}>
               {c.value}
             </p>
           </div>
@@ -230,7 +230,7 @@ export default function ReportView({ report }: { report: EodReport }) {
       {/* Declarations vs expected */}
       <Section title={t('eod.sections.declarations')}>
         {!report.declarationsEntered && (
-          <p className="px-5 py-3 text-sm text-amber-700 dark:text-amber-300 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/30 dark:bg-amber-900/30">{t('eod.declarationsMissing')}</p>
+          <p className="px-5 py-3 text-sm text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/30">{t('eod.declarationsMissing')}</p>
         )}
         <table className="w-full text-sm">
           <thead><tr>
@@ -261,7 +261,7 @@ export default function ReportView({ report }: { report: EodReport }) {
       {/* What the Z did */}
       {report.kind === 'Z' && (report.autoClockedOut.length > 0 || report.autoCancelledOrders > 0) && (
         <Section title={t('eod.zActions')}>
-          <ul className="px-5 py-3 text-sm text-gray-700 dark:text-gray-200 dark:text-gray-200 space-y-1">
+          <ul className="px-5 py-3 text-sm text-gray-700 dark:text-gray-200 space-y-1">
             {report.autoClockedOut.length > 0 && (
               <li>{t('eod.autoClockedOut')}: {report.autoClockedOut.join(', ')}</li>
             )}

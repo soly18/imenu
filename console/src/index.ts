@@ -123,16 +123,22 @@ panel.get('/customers', wrap(async (_req, res) => {
   res.json(rows.map((c) => ({ ...c, licence_until: ymd(c.licence_until) })));
 }));
 
+const DETAIL_FIELDS: [string, string, number][] = [   // [JSON key, column, max length]
+  ['businessId', 'business_id', 40], ['contactName', 'contact_name', 120], ['phone', 'phone', 40], ['phone2', 'phone2', 40],
+  ['email', 'email', 160], ['address', 'address', 200], ['city', 'city', 80], ['country', 'country', 60], ['website', 'website', 160],
+];
 const newCode = () => crypto.randomBytes(4).toString('hex').toUpperCase();
 
 panel.post('/customers', wrap(async (req, res) => {
   const b = req.body || {}; const name = String(b.name || '').trim().slice(0, 120);
   if (!name) return res.status(400).json({ error: 'name required' });
   const code = String(b.code || '').trim().toUpperCase().slice(0, 40) || newCode();
+  const cols = ['name', 'code', 'notes', 'licence_until', 'features'];
+  const vals: any[] = [name, code, String(b.notes || '').slice(0, 2000) || null, dateOrNull(b.licenceUntil),
+    cleanFeatures(b.features) ? JSON.stringify(cleanFeatures(b.features)) : null];
+  for (const [k, col, n] of DETAIL_FIELDS) { cols.push(col); vals.push(String(b[k] || '').trim().slice(0, n) || null); }
   try {
-    const [r] = await pool.query<any>('INSERT INTO customers (name, code, notes, licence_until, features) VALUES (?,?,?,?,?)',
-      [name, code, String(b.notes || '').slice(0, 2000) || null, dateOrNull(b.licenceUntil),
-       cleanFeatures(b.features) ? JSON.stringify(cleanFeatures(b.features)) : null]);
+    const [r] = await pool.query<any>(`INSERT INTO customers (${cols.join(',')}) VALUES (${cols.map(() => '?').join(',')})`, vals);
     res.status(201).json({ id: r.insertId, code });
   } catch (e: any) { if (e.code === 'ER_DUP_ENTRY') return res.status(409).json({ error: 'code already used' }); throw e; }
 }));
@@ -143,6 +149,7 @@ panel.patch('/customers/:id', wrap(async (req, res) => {
   if ('name' in b) { const n = String(b.name || '').trim(); if (!n) return res.status(400).json({ error: 'name required' }); put('name', n.slice(0, 120)); }
   if ('code' in b) { const c = String(b.code || '').trim().toUpperCase(); if (!c) return res.status(400).json({ error: 'code required' }); put('code', c.slice(0, 40)); }
   if ('notes' in b) put('notes', String(b.notes || '').slice(0, 2000) || null);
+  for (const [k, col, n] of DETAIL_FIELDS) if (k in b) put(col, String(b[k] || '').trim().slice(0, n) || null);
   if ('isActive' in b) put('is_active', b.isActive ? 1 : 0);
   if ('licenceUntil' in b) put('licence_until', dateOrNull(b.licenceUntil));
   if ('features' in b) { const f = cleanFeatures(b.features); put('features', f ? JSON.stringify(f) : null); }

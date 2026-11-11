@@ -53,11 +53,11 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-brand-700 to-brand-900 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-3xl shadow-2xl p-8 w-full max-w-sm">
+      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="text-4xl font-bold text-brand-600 dark:text-brand-400 dark:text-brand-400 mb-1">iMenu<span className="text-brand-400">25</span></div>
-          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 text-sm">{t('auth.enterPin')}</p>
+          <div className="text-4xl font-bold text-brand-600 dark:text-brand-400 mb-1">iMenu<span className="text-brand-400">25</span></div>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">{t('auth.enterPin')}</p>
         </div>
 
         {/* PIN display */}
@@ -66,7 +66,7 @@ export default function LoginPage() {
             <div
               key={i}
               className={`w-4 h-4 rounded-full transition-all ${
-                i < pin.length ? 'bg-brand-500 scale-110' : 'bg-gray-200 dark:bg-gray-600 dark:bg-gray-600'
+                i < pin.length ? 'bg-brand-500 scale-110' : 'bg-gray-200 dark:bg-gray-600'
               }`}
             />
           ))}
@@ -89,8 +89,8 @@ export default function LoginPage() {
                 key === 'OK'
                   ? '!bg-brand-500 !text-white hover:!bg-brand-600 col-span-1'
                   : key === 'DEL'
-                  ? 'bg-gray-100 dark:bg-gray-700 dark:bg-gray-700 text-gray-600 dark:text-gray-300 dark:text-gray-300 text-base'
-                  : 'bg-white dark:bg-gray-800 dark:bg-gray-800 text-gray-800 dark:text-gray-100 dark:text-gray-100'
+                  ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-base'
+                  : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100'
               }`}
             >
               {loading && key === 'OK' ? (
@@ -109,7 +109,7 @@ export default function LoginPage() {
               className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                 i18n.language === lng
                   ? 'bg-brand-500 text-white'
-                  : 'bg-gray-100 dark:bg-gray-700 dark:bg-gray-700 text-gray-600 dark:text-gray-300 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-500 dark:hover:bg-gray-500'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-500'
               }`}
             >
               {lng.toUpperCase()}

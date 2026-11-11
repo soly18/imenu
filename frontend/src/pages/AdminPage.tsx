@@ -13,7 +13,7 @@ const STATUS_STYLE: Record<string, string> = {
   allowed: 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200 dark:bg-green-900/40 dark:text-green-200',
   blocked: 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200 dark:bg-red-900/40 dark:text-red-200',
 };
-const card = 'bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 dark:border-gray-700 shadow-sm';
+const card = 'bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm';
 const btn = 'min-h-[44px] px-4 rounded-xl text-sm font-semibold disabled:opacity-50';
 
 /** Turns the server's error code into a message in the user's language. */
@@ -54,7 +54,7 @@ function UsersTab() {
   return (
     <div className="space-y-3">
       <div className="flex justify-between items-center">
-        <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('admin.usersHelp')}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{t('admin.usersHelp')}</p>
         <button className={`${btn} bg-brand-500 text-white flex-shrink-0`} onClick={() => setAdding(true)}>+ {t('admin.addUser')}</button>
       </div>
       {data.map((u) => {
@@ -65,19 +65,19 @@ function UsersTab() {
               {(u.firstName[0] || '') + (u.lastName?.[0] || '')}
             </div>
             <div className="flex-1 min-w-[10rem]">
-              <p className="font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">{u.firstName} {u.lastName}{self && <span className="text-xs text-brand-600 dark:text-brand-400 dark:text-brand-400 font-medium"> · {t('orders.me')}</span>}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">
+              <p className="font-bold text-gray-900 dark:text-gray-100">{u.firstName} {u.lastName}{self && <span className="text-xs text-brand-600 dark:text-brand-400 font-medium"> · {t('orders.me')}</span>}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
                 {u.lastLoginAt ? <>{t('admin.lastLogin')}: <bdi>{fmtDateTime(u.lastLoginAt, i18n.language)}</bdi></> : t('admin.neverLoggedIn')}
               </p>
             </div>
             <select value={u.role} disabled={self || update.isPending}
               onChange={(e) => update.mutate({ id: u.id, b: { role: e.target.value } })}
-              className="min-h-[44px] rounded-xl border border-gray-300 dark:border-gray-600 dark:border-gray-600 bg-white dark:bg-gray-800 dark:bg-gray-900 text-gray-900 dark:text-gray-100 dark:text-gray-100 px-3 text-sm disabled:opacity-60">
+              className="min-h-[44px] rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-3 text-sm disabled:opacity-60">
               {ROLES.map((r) => <option key={r} value={r}>{t(`roles.${r}`)}</option>)}
             </select>
-            <button className={`${btn} bg-gray-100 dark:bg-gray-700 dark:bg-gray-700 text-gray-700 dark:text-gray-200 dark:text-gray-200`} onClick={() => setPinFor(u)}>🔑 {t('admin.setPin')}</button>
+            <button className={`${btn} bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200`} onClick={() => setPinFor(u)}>🔑 {t('admin.setPin')}</button>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 w-14 text-end">{u.isActive ? t('admin.enabled') : t('admin.disabled')}</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 w-14 text-end">{u.isActive ? t('admin.enabled') : t('admin.disabled')}</span>
               <Switch on={u.isActive} disabled={self} label={t('admin.enabled')}
                 onChange={(v) => update.mutate({ id: u.id, b: { isActive: v } })} />
             </div>
@@ -92,21 +92,21 @@ function UsersTab() {
       )}
       {adding && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setAdding(false)}>
-          <div className="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-3xl w-full max-w-sm p-6 space-y-3" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">{t('admin.addUser')}</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-3xl w-full max-w-sm p-6 space-y-3" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t('admin.addUser')}</h2>
             {(['firstName', 'lastName'] as const).map((k) => (
               <input key={k} value={form[k]} onChange={(e) => setForm({ ...form, [k]: e.target.value })} placeholder={t(`admin.${k}`)}
-                className="w-full min-h-[48px] rounded-xl border border-gray-300 dark:border-gray-600 dark:border-gray-600 bg-white dark:bg-gray-800 dark:bg-gray-900 text-gray-900 dark:text-gray-100 dark:text-gray-100 px-3" />
+                className="w-full min-h-[48px] rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-3" />
             ))}
             <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}
-              className="w-full min-h-[48px] rounded-xl border border-gray-300 dark:border-gray-600 dark:border-gray-600 bg-white dark:bg-gray-800 dark:bg-gray-900 text-gray-900 dark:text-gray-100 dark:text-gray-100 px-3">
+              className="w-full min-h-[48px] rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-3">
               {ROLES.map((r) => <option key={r} value={r}>{t(`roles.${r}`)}</option>)}
             </select>
             <input dir="ltr" type="password" inputMode="numeric" value={form.pin} placeholder={t('admin.pinHint')}
               onChange={(e) => setForm({ ...form, pin: e.target.value.replace(/\D/g, '') })}
-              className="w-full min-h-[48px] rounded-xl border border-gray-300 dark:border-gray-600 dark:border-gray-600 bg-white dark:bg-gray-800 dark:bg-gray-900 text-gray-900 dark:text-gray-100 dark:text-gray-100 px-3 tracking-widest" />
+              className="w-full min-h-[48px] rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 dark:bg-gray-900 text-gray-900 dark:text-gray-100 px-3 tracking-widest" />
             <div className="flex gap-3 pt-2">
-              <button onClick={() => setAdding(false)} className="flex-1 min-h-[48px] rounded-xl bg-gray-100 dark:bg-gray-700 dark:bg-gray-700 text-gray-700 dark:text-gray-200 dark:text-gray-200 font-semibold">{t('common.cancel')}</button>
+              <button onClick={() => setAdding(false)} className="flex-1 min-h-[48px] rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold">{t('common.cancel')}</button>
               <button onClick={() => create.mutate()} disabled={create.isPending} className="flex-1 min-h-[48px] rounded-xl bg-brand-500 text-white font-semibold disabled:opacity-50">{t('common.save')}</button>
             </div>
           </div>
@@ -128,26 +128,26 @@ function DevicesTab() {
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('admin.devicesHelp')}</p>
+      <p className="text-sm text-gray-500 dark:text-gray-400">{t('admin.devicesHelp')}</p>
       {data.length === 0 && <p className="text-gray-400 py-8 text-center">{t('admin.noDevices')}</p>}
       {data.map((d) => (
         <div key={d.id} className={`${card} p-4 flex flex-wrap items-center gap-4`}>
           <div className="text-3xl">{d.platform === 'android-app' ? '📱' : '💻'}</div>
           <div className="flex-1 min-w-[12rem]">
-            <p className="font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100 flex flex-wrap items-center gap-2">
+            <p className="font-bold text-gray-900 dark:text-gray-100 flex flex-wrap items-center gap-2">
               {d.name}
               <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${STATUS_STYLE[d.status]}`}>{t(`admin.status.${d.status}`)}</span>
-              {d.isThisDevice && <span className="text-xs font-medium text-brand-600 dark:text-brand-400 dark:text-brand-400">{t('admin.thisDevice')}</span>}
+              {d.isThisDevice && <span className="text-xs font-medium text-brand-600 dark:text-brand-400">{t('admin.thisDevice')}</span>}
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">
+            <p className="text-xs text-gray-500 dark:text-gray-400">
               <bdi dir="ltr">{d.lastIp || '-'}</bdi> · {d.lastUser || '-'} · <bdi>{fmtDateTime(d.lastSeenAt, i18n.language)}</bdi>
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             {d.status !== 'allowed' && <button className={`${btn} bg-green-600 text-white`} onClick={() => update.mutate({ id: d.id, b: { status: 'allowed' } })}>✓ {t('admin.allow')}</button>}
-            {d.status !== 'blocked' && !d.isThisDevice && <button className={`${btn} bg-red-50 dark:bg-red-900/30 dark:bg-red-900/30 text-red-700 dark:text-red-300 dark:text-red-300`} onClick={() => update.mutate({ id: d.id, b: { status: 'blocked' } })}>⛔ {t('admin.block')}</button>}
-            <button className={`${btn} bg-gray-100 dark:bg-gray-700 dark:bg-gray-700 text-gray-700 dark:text-gray-200 dark:text-gray-200`} onClick={() => setRenaming(d)}>✏️ {t('admin.rename')}</button>
-            {!d.isThisDevice && <button className={`${btn} bg-gray-100 dark:bg-gray-700 dark:bg-gray-700 text-gray-700 dark:text-gray-200 dark:text-gray-200`}
+            {d.status !== 'blocked' && !d.isThisDevice && <button className={`${btn} bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300`} onClick={() => update.mutate({ id: d.id, b: { status: 'blocked' } })}>⛔ {t('admin.block')}</button>}
+            <button className={`${btn} bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200`} onClick={() => setRenaming(d)}>✏️ {t('admin.rename')}</button>
+            {!d.isThisDevice && <button className={`${btn} bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200`}
               onClick={() => window.confirm(t('admin.forgetConfirm')) && remove.mutate(d.id)}>🗑</button>}
           </div>
         </div>
@@ -174,8 +174,8 @@ function SettingsTab() {
     <div className={`${card} p-5 flex items-start gap-4`}>
       <Switch on={!!data?.requireDeviceApproval} disabled={!data || save.isPending} label={t('admin.requireApproval')} onChange={(v) => save.mutate(v)} />
       <div>
-        <p className="font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">{t('admin.requireApproval')}</p>
-        <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">{t('admin.requireApprovalHelp')}</p>
+        <p className="font-bold text-gray-900 dark:text-gray-100">{t('admin.requireApproval')}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('admin.requireApprovalHelp')}</p>
       </div>
     </div>
   );
@@ -193,12 +193,12 @@ export default function AdminPage() {
   ];
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-5">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-gray-100">{t('admin.title')}</h1>
-      <div className="flex gap-1 border-b border-gray-200 dark:border-gray-700 dark:border-gray-700 overflow-x-auto">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('admin.title')}</h1>
+      <div className="flex gap-1 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
         {tabs.map((tb) => (
           <button key={tb.key} onClick={() => setTab(tb.key)}
             className={`min-h-[48px] px-4 text-sm font-medium -mb-px border-b-2 whitespace-nowrap flex items-center gap-2 ${
-              tab === tb.key ? 'border-brand-500 text-brand-600 dark:text-brand-400 dark:text-brand-400' : 'border-transparent text-gray-500 dark:text-gray-400 dark:text-gray-400'}`}>
+              tab === tb.key ? 'border-brand-500 text-brand-600 dark:text-brand-400' : 'border-transparent text-gray-500 dark:text-gray-400'}`}>
             {tb.label}
             {!!tb.badge && <span className="bg-red-600 text-white text-xs rounded-full px-2 py-0.5">{tb.badge}</span>}
           </button>

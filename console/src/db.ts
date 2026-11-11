@@ -52,4 +52,16 @@ export async function initDb() {
     INDEX (customer_id),
     CONSTRAINT fk_dev_cust FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL
   ) ENGINE=InnoDB`);
+
+  // Customer detail columns, added to databases created by the first version.
+  const cols: [string, string][] = [
+    ['business_id', 'VARCHAR(40) NULL'], ['contact_name', 'VARCHAR(120) NULL'], ['phone', 'VARCHAR(40) NULL'],
+    ['phone2', 'VARCHAR(40) NULL'], ['email', 'VARCHAR(160) NULL'], ['address', 'VARCHAR(200) NULL'],
+    ['city', 'VARCHAR(80) NULL'], ['country', 'VARCHAR(60) NULL'], ['website', 'VARCHAR(160) NULL'],
+  ];
+  for (const [name, def] of cols) {
+    const [r] = await pool.query<any[]>(
+      'SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND COLUMN_NAME = ?', [DB_NAME, 'customers', name]);
+    if (!r.length) await pool.query(`ALTER TABLE customers ADD COLUMN ${name} ${def}`);
+  }
 }

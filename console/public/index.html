@@ -25,6 +25,7 @@
   .allowed{background:#dcfce7;color:#166534}.pending{background:#fef3c7;color:#92400e}.blocked,.expired{background:#fee2e2;color:#991b1b}
   @media (prefers-color-scheme:dark){.allowed{background:#14532d;color:#bbf7d0}.pending{background:#78350f;color:#fde68a}.blocked,.expired{background:#7f1d1d;color:#fecaca}}
   .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#9ca3af;margin-right:6px}.dot.on{background:var(--ok)}
+  .devrow{padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;cursor:pointer}.devrow:hover{background:rgba(249,115,22,.08)}
   .mute{color:var(--mute)} .mono{font-family:ui-monospace,Menlo,monospace;font-size:12px}
   dialog{border:0;border-radius:16px;padding:0;width:min(560px,94vw);background:var(--card);color:var(--text);box-shadow:0 20px 60px rgba(0,0,0,.4)}
   dialog::backdrop{background:rgba(0,0,0,.55)} dialog form{padding:22px;display:grid;gap:12px}
@@ -32,6 +33,7 @@
   .row{display:grid;grid-template-columns:1fr 1fr;gap:12px} .feat{display:grid;grid-template-columns:1fr auto;gap:6px 12px;align-items:center;font-size:14px}
   .feat select{min-width:120px} .acts{display:flex;gap:8px;justify-content:flex-end;margin-top:6px} .acts .sp{flex:1}
   #login{max-width:340px;margin:12vh auto;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px;display:grid;gap:12px}
+  @media (max-width:640px){.row{grid-template-columns:1fr} main{padding:12px} header{padding:0 12px;gap:8px} header span:not(.sp){display:none} dialog form{padding:16px}}
   #err{color:var(--bad);min-height:18px} .hide{display:none!important} .tag{background:var(--line);border-radius:6px;padding:1px 6px;font-size:11px;margin-right:3px}
 </style>
 </head>
@@ -58,8 +60,8 @@
       <div class="card"><table><thead><tr><th>Seen</th><th>S/N</th><th>Device ID</th><th>Model</th><th>Customer</th><th>Status</th><th>Licence until</th><th>App</th><th>Last IP</th></tr></thead><tbody id="dbody"></tbody></table></div>
     </section>
     <section id="customers" class="hide">
-      <div class="bar"><button class="btn" id="newcust">+ New customer</button></div>
-      <div class="card"><table><thead><tr><th>Name</th><th>Enrolment code</th><th>Devices</th><th>Licence until</th><th>Active</th><th>Features off</th></tr></thead><tbody id="cbody"></tbody></table></div>
+      <div class="bar"><button class="btn" id="newcust">+ New customer</button><input id="cq" placeholder="Search name, no., phone, city…" style="min-width:260px"></div>
+      <div class="card"><table><thead><tr><th>No.</th><th>Name</th><th>City</th><th>Phone</th><th>Enrolment code</th><th>Devices</th><th>Licence until</th><th>Active</th><th>Features off</th></tr></thead><tbody id="cbody"></tbody></table></div>
     </section>
   </main>
 </div>
@@ -127,14 +129,18 @@ function drawDevices() {
 }
 ['q', 'fstat', 'fcust'].forEach((i) => $('#' + i).oninput = drawDevices);
 
+const cno = (c) => 'C-' + String(c.id).padStart(4, '0');
 function drawCustomers() {
-  $('#cbody').innerHTML = customers.map((c) => {
+  const q = $('#cq').value.toLowerCase();
+  const list = customers.filter((c) => !q || [cno(c), c.name, c.phone, c.phone2, c.city, c.email, c.contact_name, c.business_id].some((v) => (v || '').toLowerCase().includes(q)));
+  $('#cbody').innerHTML = list.map((c) => {
     const off = Object.entries(c.features || {}).filter(([, v]) => v === false).map(([k]) => `<span class="tag">${esc(k)}</span>`).join('');
-    return `<tr data-id="${c.id}"><td><b>${esc(c.name)}</b></td><td class="mono">${esc(c.code)}</td><td>${c.device_count}</td>
+    return `<tr data-id="${c.id}"><td class="mono">${cno(c)}</td><td><b>${esc(c.name)}</b></td><td>${esc(c.city || '')}</td><td>${esc(c.phone || '')}</td><td class="mono">${esc(c.code)}</td><td>${c.device_count}</td>
       <td>${c.licence_until || '<span class="mute">no expiry</span>'}</td><td><span class="pill ${c.is_active ? 'allowed' : 'blocked'}">${c.is_active ? 'active' : 'off'}</span></td><td>${off || '<span class="mute">—</span>'}</td></tr>`;
-  }).join('') || '<tr><td colspan="6" class="mute" style="text-align:center;padding:30px">No customers yet.</td></tr>';
+  }).join('') || '<tr><td colspan="9" class="mute" style="text-align:center;padding:30px">No customers yet.</td></tr>';
   document.querySelectorAll('#cbody tr[data-id]').forEach((tr) => tr.onclick = () => editCustomer(+tr.dataset.id));
 }
+$('#cq').oninput = drawCustomers;
 
 /* tri-state selects: inherit / on / off */
 const featRows = (cur, inheritLabel) => FEATS.map((f) => {
@@ -168,20 +174,28 @@ function editDevice(id) {
 
 function editCustomer(id) {
   const c = id ? customers.find((x) => x.id === id) : { name: '', code: '', notes: '', is_active: 1, licence_until: '', features: {} }, f = $('#cform');
-  f.innerHTML = `<h2>${id ? esc(c.name) : 'New customer'}</h2>
-    <div class="row"><label>Name<input name="name" value="${esc(c.name)}"></label>
-      <label>Enrolment code<input name="code" value="${esc(c.code)}" placeholder="auto if empty" style="text-transform:uppercase"></label></div>
+  const devs = id ? devices.filter((d) => d.customer_id === id) : [];
+  const inp = (label, name, val, extra = '') => `<label>${label}<input name="${name}" value="${esc(val)}" ${extra}></label>`;
+  f.innerHTML = `<h2>${id ? esc(c.name) + ` <span class="mute mono" style="font-size:13px">${cno(c)}</span>` : 'New customer'}</h2>
+    <div class="row">${inp('Name', 'name', c.name)}${inp('Enrolment code', 'code', c.code, 'placeholder="auto if empty" style="text-transform:uppercase"')}</div>
+    <div class="row">${inp('Business / VAT ID', 'businessId', c.business_id)}${inp('Contact person', 'contactName', c.contact_name)}</div>
+    <div class="row">${inp('Phone', 'phone', c.phone, 'type="tel"')}${inp('Phone 2', 'phone2', c.phone2, 'type="tel"')}</div>
+    <div class="row">${inp('Email', 'email', c.email, 'type="email"')}${inp('Website', 'website', c.website)}</div>
+    ${inp('Address', 'address', c.address)}
+    <div class="row">${inp('City', 'city', c.city)}${inp('Country', 'country', c.country)}</div>
     <div class="row"><label>Licence until (empty = no expiry)<input type="date" name="licenceUntil" value="${c.licence_until || ''}"></label>
       <label>Active<select name="isActive"><option value="1" ${c.is_active ? 'selected' : ''}>Active</option><option value="0" ${c.is_active ? '' : 'selected'}>Off (blocks all its devices)</option></select></label></div>
     <label>Notes<textarea name="notes" rows="2">${esc(c.notes)}</textarea></label>
+    ${id ? `<div><div class="mute" style="margin-bottom:6px;font-size:12px">DEVICES (${devs.length}) — click to edit</div>${devs.length ? devs.map((d) => `<div class="devrow" data-d="${d.id}"><span class="dot ${online(d.last_seen_at) ? 'on' : ''}"></span><b>${esc(d.serial || '— no S/N —')}</b> <span class="mute">${esc([d.label, d.brand, d.model].filter(Boolean).join(' · '))}</span> <span class="pill ${d.status}" style="float:right">${d.status}</span></div>`).join('') : '<div class="mute">No device yet — give the customer code to the device (Server dialog) or assign it in Devices.</div>'}</div>` : ''}
     <div><div class="mute" style="margin-bottom:6px;font-size:12px">FEATURES for all this customer's devices</div><div class="feat">${featRows(c.features, 'On (default)')}</div></div>
-    <div class="mute" style="font-size:12px">A new device joins this customer when its enrolment code is entered in the app (Server dialog), or you assign it in the Devices tab.</div>
     <div class="acts">${id ? '<button type="button" class="btn red" id="cdel">Delete</button>' : ''}<span class="sp"></span><button type="button" class="btn ghost" id="ccancel">Cancel</button><button type="button" class="btn" id="csave">Save</button></div>`;
   $('#cdlg').showModal();
+  f.querySelectorAll('.devrow').forEach((r) => r.onclick = () => { $('#cdlg').close(); editDevice(+r.dataset.d); });
   $('#ccancel').onclick = () => $('#cdlg').close();
   if (id) $('#cdel').onclick = async () => { if (confirm('Delete this customer? Its devices stay in the list, unassigned.')) { await api('DELETE', '/customers/' + id); $('#cdlg').close(); load(); } };
   $('#csave').onclick = async () => {
     const body = { name: f.name.value, code: f.code.value, licenceUntil: f.licenceUntil.value || null, notes: f.notes.value, features: readFeats(f) };
+    ['businessId', 'contactName', 'phone', 'phone2', 'email', 'website', 'address', 'city', 'country'].forEach((k) => body[k] = f[k].value);
     if (id) await api('PATCH', '/customers/' + id, { ...body, isActive: f.isActive.value === '1' }); else await api('POST', '/customers', body);
     $('#cdlg').close(); load();
   };
