@@ -80,16 +80,18 @@ router.get('/:id', authenticate, async (req: AuthRequest, res: Response) => {
 
   const [items]: any = await pool.execute(
     `SELECT oi.id, oi.order_id AS orderId, oi.menu_item_id AS menuItemId,
-            oi.name_primary AS namePrimary, oi.name_secondary AS nameSecondary,
+            oi.name_primary AS namePrimary, oi.name_secondary AS nameSecondary, mi.name_ar AS nameAr, mi.name_ru AS nameRu,
             oi.quantity, oi.unit_price AS unitPrice, oi.total_price AS totalPrice,
             oi.notes, oi.is_voided AS isVoided, oi.sent_to_kitchen AS sentToKitchen
-     FROM order_items oi WHERE oi.order_id = ? AND oi.is_voided = 0 ORDER BY oi.id`,
+     FROM order_items oi LEFT JOIN menu_items mi ON mi.id = oi.menu_item_id
+     WHERE oi.order_id = ? AND oi.is_voided = 0 ORDER BY oi.id`,
     [req.params.id]
   );
   const [choiceRows]: any = await pool.execute(
     `SELECT oic.order_item_id AS orderItemId, oic.choice_id AS choiceId,
-            oic.name_primary AS namePrimary, oic.extra_price AS extraPrice
+            oic.name_primary AS namePrimary, mc.name_secondary AS nameSecondary, mc.name_ar AS nameAr, mc.name_ru AS nameRu, oic.extra_price AS extraPrice
      FROM order_item_choices oic JOIN order_items oi ON oi.id = oic.order_item_id
+     LEFT JOIN menu_choices mc ON mc.id = oic.choice_id
      WHERE oi.order_id = ?`,
     [req.params.id]
   );

@@ -7,6 +7,7 @@ import { menuApi, ordersApi } from '@/api';
 import { DragScroll } from '@/hooks/useDragScroll';
 import { useAuthStore } from '@/store/authStore';
 import { usePosStore } from '@/store/posStore';
+import { localName } from '@/utils/localName';
 import type { MenuItem, MenuGroup } from '@imenu25/shared';
 
 // ── Order Item Row ────────────────────────────────────────────
@@ -15,13 +16,13 @@ function OrderItemRow({ item, onVoid, onQty }: {
   onVoid: () => void;
   onQty: (qty: number) => void;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   return (
     <div className="flex items-center gap-2 py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
       <div className="flex-1 min-w-0">
-        <p className="font-medium text-gray-900 dark:text-gray-100 truncate text-sm">{item.namePrimary}</p>
+        <p className="font-medium text-gray-900 dark:text-gray-100 truncate text-sm">{localName(item, i18n.language)}</p>
         {item.choices?.length > 0 && (
-          <p className="text-xs text-gray-400">{item.choices.map((c: any) => c.namePrimary).join(', ')}</p>
+          <p className="text-xs text-gray-400">{item.choices.map((c: any) => localName(c, i18n.language)).join(', ')}</p>
         )}
       </div>
       <div className="flex items-center gap-1">
@@ -76,7 +77,7 @@ function PayModal({ total, onPay, onClose }: { total: number; onPay: (payments: 
 
 // ── Main POS ───────────────────────────────────────────────────
 export default function PosPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const qc = useQueryClient();
   const [activeGroup, setActiveGroup] = useState<number | null>(null);
   const [showPay, setShowPay] = useState(false);
@@ -185,7 +186,7 @@ export default function PosPage() {
               }`}
               style={activeGroup !== g.id && g.color ? { borderLeft: `4px solid ${g.color}` } : {}}
             >
-              {g.namePrimary}
+              {localName(g, i18n.language)}
             </button>
           ))}
         </DragScroll>
@@ -208,7 +209,7 @@ export default function PosPage() {
                   className="menu-item-card"
                 >
                   <p className="font-semibold text-gray-800 dark:text-gray-100 text-xs leading-tight mb-1 line-clamp-2">
-                    {item.namePrimary}
+                    {localName(item, i18n.language)}
                   </p>
                   <p className="text-brand-600 dark:text-brand-400 font-bold text-sm">₪{item.price}</p>
                 </button>

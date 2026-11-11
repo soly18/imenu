@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { localName } from '@/utils/localName';
 import type { OrderBoardItem, OrderStatus } from '@imenu25/shared';
 import { ordersApi } from '@/api';
 import { usePosStore } from '@/store/posStore';
@@ -166,7 +167,7 @@ function OrderDetail({ id, onClose }: { id: number; onClose: () => void }) {
             <DragScroll className="flex-1 overflow-y-auto divide-y divide-gray-100 dark:divide-gray-700 border border-gray-100 dark:border-gray-700 rounded-xl">
               {data.items.map((it: any) => (
                 <div key={it.id} className="px-3 py-2 flex justify-between gap-3 text-sm">
-                  <span>{it.quantity} × {it.namePrimary}</span>
+                  <span>{it.quantity} × {localName(it, i18n.language)}</span>
                   <span dir="ltr" className="tabular-nums">{fmtMoney(it.totalPrice, i18n.language, t('common.currency'))}</span>
                 </div>
               ))}

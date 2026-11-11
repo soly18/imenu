@@ -373,7 +373,32 @@ async function columnExists(conn: any, table: string, column: string): Promise<b
 }
 
 /** Changes for databases that were created by an earlier version of this script. */
+const DEMO_ITEMS: Record<string, [string, string]> = {   // code -> [Arabic, Russian] for the demo menu
+  S01: ['حمص', 'Хумус'], S02: ['سلطة خضار', 'Овощной салат'], S03: ['فلافل', 'Фалафель'],
+  M01: ['شنيتسل دجاج', 'Куриный шницель'], M02: ['لحم مفروم', 'Рубленая говядина'], M03: ['سمك القاروس', 'Морской окунь'], M04: ['باستا كاربونارا', 'Паста карбонара'],
+  P01: ['بيتزا مارغريتا', 'Пицца Маргарита'], P02: ['بيتزا بارما', 'Пицца Парма'],
+  D01: ['كعكة الشوكولاتة', 'Шоколадный торт'], D02: ['بوظة', 'Мороженое'],
+  B01: ['مياه معدنية', 'Минеральная вода'], B02: ['كولا', 'Кола'], B03: ['قهوة سوداء', 'Чёрный кофе'], B04: ['كأس نبيذ أحمر', 'Бокал красного вина'],
+};
+const DEMO_GROUPS: Record<string, [string, string]> = {   // English name -> [Arabic, Russian]
+  Starters: ['مقبلات', 'Закуски'], Mains: ['أطباق رئيسية', 'Основные блюда'], Pizzas: ['بيتزا', 'Пицца'], Desserts: ['حلويات', 'Десерты'], Beverages: ['مشروبات', 'Напитки'],
+};
+
 async function upgrades(conn: any) {
+  // Menu names in Arabic and Russian (name_primary = local language, name_secondary = English)
+  for (const table of ['menu_groups', 'menu_items', 'menu_choices']) {
+    for (const col of ['name_ar', 'name_ru']) {
+      if (!(await columnExists(conn, table, col))) {
+        await conn.execute(`ALTER TABLE ${table} ADD COLUMN ${col} VARCHAR(200) NULL`);
+        console.log(`  ↑ ${table}.${col} added`);
+      }
+    }
+  }
+  // Fill the demo menu (only where still empty, so real translations are never overwritten)
+  for (const [code, [ar, ru]] of Object.entries(DEMO_ITEMS))
+    await conn.execute('UPDATE menu_items SET name_ar = COALESCE(name_ar, ?), name_ru = COALESCE(name_ru, ?) WHERE code = ?', [ar, ru, code]);
+  for (const [en, [ar, ru]] of Object.entries(DEMO_GROUPS))
+    await conn.execute('UPDATE menu_groups SET name_ar = COALESCE(name_ar, ?), name_ru = COALESCE(name_ru, ?) WHERE name_secondary = ?', [ar, ru, en]);
   if (!(await columnExists(conn, 'branches', 'require_device_approval'))) {
     await conn.execute('ALTER TABLE branches ADD COLUMN require_device_approval BOOLEAN NOT NULL DEFAULT FALSE');
     console.log('  ↑ branches.require_device_approval added');

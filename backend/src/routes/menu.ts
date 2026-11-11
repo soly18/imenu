@@ -7,7 +7,7 @@ const router = Router();
 // GET /api/menu/groups
 router.get('/groups', authenticate, async (req: AuthRequest, res: Response) => {
   const [rows] = await pool.execute(
-    `SELECT id, name_primary AS namePrimary, name_secondary AS nameSecondary,
+    `SELECT id, name_primary AS namePrimary, name_secondary AS nameSecondary, name_ar AS nameAr, name_ru AS nameRu,
             sort_order AS sortOrder, color, image_url AS imageUrl, is_active AS isActive
      FROM menu_groups WHERE branch_id = ? AND is_active = 1 ORDER BY sort_order`,
     [req.user!.branchId]
@@ -24,7 +24,7 @@ router.get('/items', authenticate, async (req: AuthRequest, res: Response) => {
 
   const [rows] = await pool.execute(
     `SELECT mi.id, mi.group_id AS groupId, mi.code, mi.name_primary AS namePrimary,
-            mi.name_secondary AS nameSecondary, mi.price, mi.price_takeaway AS priceTakeaway,
+            mi.name_secondary AS nameSecondary, mi.name_ar AS nameAr, mi.name_ru AS nameRu, mi.price, mi.price_takeaway AS priceTakeaway,
             mi.vat_rate AS vatRate, mi.has_choices AS hasChoices,
             mi.is_combo AS isCombo, mi.is_pizza AS isPizza,
             mi.weight_item AS weightItem, mi.barcode, mi.image_url AS imageUrl, mi.sort_order AS sortOrder
@@ -40,7 +40,7 @@ router.get('/items', authenticate, async (req: AuthRequest, res: Response) => {
 // GET /api/menu/items/:id/choices
 router.get('/items/:id/choices', authenticate, async (req: AuthRequest, res: Response) => {
   const [rows] = await pool.execute(
-    `SELECT id, name_primary AS namePrimary, name_secondary AS nameSecondary,
+    `SELECT id, name_primary AS namePrimary, name_secondary AS nameSecondary, name_ar AS nameAr, name_ru AS nameRu,
             extra_price AS extraPrice, sort_order AS sortOrder
      FROM menu_choices WHERE item_id = ? AND is_active = 1 ORDER BY sort_order`,
     [req.params.id]
