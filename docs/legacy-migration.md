@@ -120,3 +120,23 @@ A script `backend/src/tools/importLegacy.ts` that:
 ## Multi-customer later
 The new schema is already per-`branch_id`. A second customer is a second branch (or a
 separate database), imported with the same tool and a different `--customer`.
+
+## Mapping verified against the real iMenu25 schema (`imenu_light`, MySQL 5.5)
+
+| Old table.column | New |
+|---|---|
+| `zones` (`zoneID`, `primeLang`) | floor plans |
+| `storetables` (`storeTableID`, `primeLang`, `tableLeft/Top/Width/Height`, `maxDiners`, `isActive`, `zoneID`) | tables with position, size, seats. `ObjType > 0` (walls/decoration) is skipped |
+| `itemsgroups` (`GroupprimeLang`, `GroupsecLang`, `groupColor`, `place`, `groupActive`, `imageName`) | menu groups. `parentGroup` sub-groups are imported as normal groups (the new menu has one level) |
+| `items` (`primeLang`, `secLang`, `price`, `takeawayPrice`, `ItemGroupID`, `itemPlace`, `itemActive`, `iBarcode`, `ItemImage`) | menu items |
+| `items_unicode` (`iu_itemID`, `iu_name`) | Arabic / Russian item names (language detected from the script of the text) |
+| `employees` (`empPrimeLang`, `employeeIdent`, `EmployeeActive`, `empGroupID`) + `employeesgroups` | employees. `employeeIdent` (the code typed at login in the old system) becomes the PIN if it is 3–8 digits and unique. Role guessed from the group name (manager / cashier, else waiter); nobody becomes admin |
+
+### Pictures
+The old system stores only a path relative to its program folder (e.g. `\images\items\pizza.jpg`); the files are on the old PC.
+1. Copy the old program's picture folder (the one containing `images`) to the new server, e.g. `backend/legacy-images/` (default) or any folder, and set `LEGACY_IMAGES_DIR` in `backend/.env` if it is elsewhere.
+2. Run the import again: pictures are matched by path (or by file name, case-insensitive) and copied into `backend/uploads/menu/`.
+The preview report says how many were copied and how many were referenced but not found.
+
+### Not imported yet
+Choices / add-ons (`choice`, `items_choice`), pizza and combo definitions, discounts, members, order history, payments. These need their own screens in the new system first.

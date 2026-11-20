@@ -385,6 +385,15 @@ const DEMO_GROUPS: Record<string, [string, string]> = {   // English name -> [Ar
 };
 
 async function upgrades(conn: any) {
+  // Pictures and outline icons for menu groups / items (picture = existing image_url; icon = built-in outline icon key)
+  for (const table of ['menu_groups', 'menu_items']) {
+    for (const [col, def] of [['icon', 'VARCHAR(40) NULL']]) {
+      if (!(await columnExists(conn, table, col))) {
+        await conn.execute(`ALTER TABLE ${table} ADD COLUMN ${col} ${def}`);
+        console.log(`  ↑ ${table}.${col} added`);
+      }
+    }
+  }
   // Menu names in Arabic and Russian (name_primary = local language, name_secondary = English)
   for (const table of ['menu_groups', 'menu_items', 'menu_choices']) {
     for (const col of ['name_ar', 'name_ru']) {

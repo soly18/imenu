@@ -21,12 +21,16 @@ export const dashboardApi = {
 
 // ── Menu ──────────────────────────────────────────────────────
 export const menuApi = {
-  groups: () => api.get<MenuGroup[]>('/menu/groups').then(r => r.data),
-  items: (groupId?: number) =>
-    api.get<MenuItem[]>('/menu/items', { params: groupId ? { groupId } : {} }).then(r => r.data),
+  groups: (all = false) => api.get<MenuGroup[]>('/menu/groups', { params: all ? { all: 1 } : {} }).then(r => r.data),
+  items: (groupId?: number, all = false) =>
+    api.get<MenuItem[]>('/menu/items', { params: { ...(groupId ? { groupId } : {}), ...(all ? { all: 1 } : {}) } }).then(r => r.data),
   choices: (itemId: number) => api.get(`/menu/items/${itemId}/choices`).then(r => r.data),
-  createItem: (data: Partial<MenuItem>) => api.post('/menu/items', data).then(r => r.data),
-  updateItem: (id: number, data: Partial<MenuItem>) => api.put(`/menu/items/${id}`, data).then(r => r.data),
+  createItem: (data: any) => api.post<{ id: number }>('/menu/items', data).then(r => r.data),
+  updateItem: (id: number, data: any) => api.put(`/menu/items/${id}`, data).then(r => r.data),
+  createGroup: (data: any) => api.post<{ id: number }>('/menu/groups', data).then(r => r.data),
+  updateGroup: (id: number, data: any) => api.put(`/menu/groups/${id}`, data).then(r => r.data),
+  uploadImage: (kind: 'groups' | 'items', id: number, dataUrl: string) => api.post<{ imageUrl: string }>(`/menu/${kind}/${id}/image`, { dataUrl }).then(r => r.data),
+  deleteImage: (kind: 'groups' | 'items', id: number) => api.delete(`/menu/${kind}/${id}/image`).then(r => r.data),
 };
 
 // ── Orders ────────────────────────────────────────────────────

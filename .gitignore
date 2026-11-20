@@ -15,3 +15,5 @@ desktop/dist/
 desktop/node_modules/
 .env.local
 .env.*.local
+backend/uploads/
+backend/legacy-images/

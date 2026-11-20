@@ -18,6 +18,12 @@ export function apiBase(): string {
   return `${s}/api`;
 }
 
+/** Pictures are served by the backend (/uploads/...): prefix the server address when the app is not served by it (APK, desktop). */
+export function mediaUrl(path: string): string {
+  if (/^https?:|^data:/i.test(path)) return path;
+  return getServerUrl().replace(/\/+$/, '').replace(/\/api$/, '') + path;
+}
+
 /* ---------- Device identity ---------- */
 export function getDeviceId(): string {
   try {

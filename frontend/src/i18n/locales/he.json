@@ -343,5 +343,36 @@
     "pending": "ממתין לאישור",
     "deviceId": "מזהה מכשיר",
     "retry": "בדוק שוב"
+  },
+  "menuEditor": {
+    "newGroup": "קבוצה חדשה",
+    "newItem": "פריט חדש",
+    "search": "חיפוש…",
+    "allGroups": "כל הקבוצות",
+    "hidden": "מוסתר",
+    "empty": "עדיין אין כלום",
+    "photo": "תמונה",
+    "removePhoto": "הסר תמונה",
+    "icon": "אייקון קווי (כשאין תמונה)",
+    "noIcon": "ללא",
+    "nameHe": "שם (עברית)",
+    "nameEn": "שם (אנגלית)",
+    "nameAr": "שם (ערבית)",
+    "nameRu": "שם (רוסית)",
+    "group": "קבוצה",
+    "barcode": "ברקוד",
+    "price": "מחיר",
+    "takeawayPrice": "מחיר טייק-אווי (אופציונלי)",
+    "color": "צבע",
+    "visible": "הצג בקופה",
+    "saved": "נשמר",
+    "err": {
+      "generic": "השמירה נכשלה",
+      "NAME_REQUIRED": "נדרש שם",
+      "BAD_PRICE": "הזינו מחיר תקין",
+      "BAD_GROUP": "בחרו קבוצה",
+      "BAD_IMAGE": "לא ניתן לקרוא את התמונה",
+      "IMAGE_TOO_BIG": "התמונה גדולה מדי"
+    }
   }
 }

@@ -1,4 +1,7 @@
 import bcrypt from 'bcryptjs';
+import fs from 'fs';
+import path from 'path';
+import { MENU_IMG_DIR } from '../uploads';
 import type { LegacyQuery } from './legacyDb';
 import type { LegacyProfile } from './profile';
 
@@ -24,24 +27,24 @@ export interface ImportReport {
 const TABLES = {
   zones:     ['zones'],
   tables:    ['storetables', 'store_tables', 'tables'],
-  groups:    ['itemgroups', 'item_groups', 'groups', 'itemcategories', 'categories', 'menugroups'],
+  groups:    ['itemsgroups', 'itemgroups', 'item_groups', 'groups', 'itemcategories', 'categories', 'menugroups'],
   items:     ['items'],
   employees: ['employees'],
 };
 const COLS = {
-  zones:     { id: ['zoneID', 'id'], name: ['primeLang', 'zoneName', 'name'] },
+  zones:     { id: ['zoneID', 'id'], name: ['primeLang', 'zoneName', 'name'], active: ['zoneActive'], sort: ['zoneplace'] },
   tables:    { id: ['storeTableID', 'tableID', 'id'], zone: ['zoneID'], label: ['tableNumber', 'tableNum', 'tableName', 'number', 'name', 'primeLang'],
-               x: ['posX', 'xPos', 'x', 'left'], y: ['posY', 'yPos', 'y', 'top'], w: ['width'], h: ['height'],
-               seats: ['seats', 'capacity', 'diners'], active: ['active', 'isActive'] },
-  groups:    { id: ['groupID', 'itemGroupID', 'categoryID', 'id'], name: ['primeLang', 'groupName', 'name', 'groupPrimeLang'],
-               name2: ['secondLang', 'secondaryLang', 'groupSecondLang'], color: ['color', 'colour'],
-               sort: ['sortOrder', 'orderBy', 'sort', 'position'], active: ['active', 'isActive'] },
-  items:     { id: ['itemID', 'id'], group: ['groupID', 'itemGroupID', 'categoryID'], name: ['primeLang', 'itemName', 'name', 'itemPrimeLang'],
-               name2: ['secondLang', 'secondaryLang'], price: ['OrdersPrice', 'Price', 'itemPrice'], takeaway: ['TakeawayPrice'],
-               vat: ['vatRate', 'vat', 'taxRate'], barcode: ['barcode', 'barCode'], sort: ['sortOrder', 'orderBy', 'sort', 'position'],
-               active: ['active', 'isActive'] },
-  employees: { id: ['EmployeeID', 'id'], name: ['empPrimeLang', 'empName', 'name'], pin: ['pinCode', 'pin', 'empPassword', 'password', 'empCode', 'code'],
-               active: ['active', 'isActive', 'enabled'] },
+               x: ['tableLeft', 'posX', 'xPos', 'x', 'left'], y: ['tableTop', 'posY', 'yPos', 'y', 'top'], w: ['tableWidth', 'width'], h: ['tableHeight', 'height'],
+               seats: ['maxDiners', 'seats', 'capacity', 'diners'], active: ['isActive', 'active'], objType: ['ObjType'] },
+  groups:    { id: ['groupID', 'itemGroupID', 'categoryID', 'id'], name: ['GroupprimeLang', 'primeLang', 'groupName', 'name', 'groupPrimeLang'],
+               name2: ['GroupsecLang', 'secLang', 'secondLang', 'secondaryLang', 'groupSecondLang'], color: ['groupColor', 'color', 'colour'],
+               sort: ['place', 'sortOrder', 'orderBy', 'sort', 'position'], active: ['groupActive', 'active', 'isActive'], image: ['imageName', 'groupImage'], parent: ['parentGroup'] },
+  items:     { id: ['itemID', 'id'], group: ['ItemGroupID', 'groupID', 'itemGroupID', 'categoryID'], name: ['primeLang', 'itemName', 'name', 'itemPrimeLang'],
+               name2: ['secLang', 'secondLang', 'secondaryLang'], price: ['price', 'OrdersPrice', 'itemPrice'], takeaway: ['takeawayPrice'],
+               vat: ['vatRate', 'vat', 'taxRate'], barcode: ['iBarcode', 'barcode', 'barCode'], sort: ['itemPlace', 'sortOrder', 'orderBy', 'sort', 'position'],
+               active: ['itemActive', 'active', 'isActive'], image: ['ItemImage'], color: ['itemColor'], available: ['available'] },
+  employees: { id: ['EmployeeID', 'id'], name: ['empPrimeLang', 'empName', 'name'], pin: ['employeeIdent', 'pinCode', 'pin', 'empPassword', 'password', 'empCode', 'code'],
+               active: ['EmployeeActive', 'active', 'isActive', 'enabled'], group: ['empGroupID'], mayOrder: ['mayOrder'] },
 } as const;
 
 const REQUIRED: Record<string, string[]> = {
@@ -94,6 +97,7 @@ const blank = (entity: string): EntityReport =>
  */
 export async function importMasters(opts: {
   q: LegacyQuery; profile: LegacyProfile; db: Db; branchId: number; dryRun: boolean; defaultVat: number;
+  imagesDir?: string;     // local copy of the old program's picture folder (see docs/legacy-migration.md)
 }): Promise<ImportReport> {
   const { q, profile, db, branchId, dryRun } = opts;
   const map = new Mapper(db, branchId, dryRun);
@@ -120,6 +124,47 @@ export async function importMasters(opts: {
       if (!dryRun) await db.execute(`UPDATE ${table} SET is_active = 0 WHERE id = ?`, [m.new_id]);
     }
   };
+
+
+  // ── Pictures ──────────────────────────────────────────────────────────────
+  // The old system stores only a path relative to its program folder (e.g. \images\items\pizza.jpg).
+  // Copy that folder to the new server, point LEGACY_IMAGES_DIR at it, and the files are picked up here.
+  const imagesDir = opts.imagesDir && fs.existsSync(opts.imagesDir) ? opts.imagesDir : null;
+  let byBase: Map<string, string> | null = null;
+  const indexImages = () => {
+    byBase = new Map();
+    const walk = (d: string, depth: number) => {
+      if (depth > 6) return;
+      for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+        const full = path.join(d, e.name);
+        if (e.isDirectory()) walk(full, depth + 1);
+        else if (/\.(jpe?g|png|gif|webp|bmp)$/i.test(e.name)) byBase!.set(e.name.toLowerCase(), full);
+      }
+    };
+    if (imagesDir) walk(imagesDir, 0);
+  };
+  const imgStats = { found: 0, missing: 0, none: 0 };
+  /** Returns the web path (/uploads/menu/...) for a legacy picture path, or null. */
+  const takeImage = (raw: any, kind: string, legacyId: string): string | null => {
+    const rel = str(raw, 255).replace(/\\/g, '/').replace(/^\/+/, '');
+    if (!rel) { imgStats.none++; return null; }
+    if (!imagesDir) { imgStats.missing++; return null; }
+    if (!byBase) indexImages();
+    const direct = path.join(imagesDir, rel);
+    const src = (fs.existsSync(direct) && fs.statSync(direct).isFile() && direct) || byBase!.get(path.basename(rel).toLowerCase());
+    if (!src) { imgStats.missing++; return null; }
+    imgStats.found++;
+    const name = `legacy-${kind}-${legacyId}${path.extname(src).toLowerCase()}`;
+    if (!dryRun) fs.copyFileSync(src, path.join(MENU_IMG_DIR, name));
+    return `/uploads/menu/${name}`;
+  };
+  const imageNote = (r: EntityReport) => {
+    if (imgStats.found + imgStats.missing === 0) return;
+    r.notes.push(`Pictures: ${imgStats.found} copied` + (imgStats.missing ? `, ${imgStats.missing} referenced but not found` : '') +
+      (imagesDir ? '' : ' — set LEGACY_IMAGES_DIR to the copied picture folder to import them'));
+    imgStats.found = imgStats.missing = imgStats.none = 0;
+  };
+  const SCRIPT = (t: string) => /[\u0600-\u06FF]/.test(t) ? 'ar' : /[\u0400-\u04FF]/.test(t) ? 'ru' : /[\u0590-\u05FF]/.test(t) ? 'he' : 'en';
 
   // ── Floor plans + tables ──────────────────────────────────────────────────
   const zones = await read('zones', 'zones → floor plans');
@@ -152,6 +197,7 @@ export async function importMasters(opts: {
     if (!hasPos) r.notes.push('No position columns found: tables are laid out in a grid, adjust them later.');
     let i = 0;
     for (const row of rows) {
+      if (cols.objType && Number(row[cols.objType]) > 0) { r.skipped++; continue; }   // walls / decoration, not tables
       const id = str(row[cols.id]); const label = str(row[cols.label], 50) || id;
       seen.add(id);
       const plan = cols.zone && planIds.has(str(row[cols.zone])) ? planIds.get(str(row[cols.zone]))! : (zones && cols.zone ? null : await ensureFallback());
@@ -168,6 +214,7 @@ export async function importMasters(opts: {
       if (nid) await map.set('table', id, nid);
       sample(r, { table: label, x, y });
     }
+    if (r.skipped) r.notes.push(`${r.skipped} non-table objects (walls/decoration) were not imported`);
     await deactivateMissing(r, 'table', seen, 'tables');
   }
 
@@ -175,20 +222,24 @@ export async function importMasters(opts: {
   const groups = await read('groups', 'menu groups');
   const groupIds = new Map<string, number>();
   if (groups) {
-    const { r, cols, rows } = groups; const seen = new Set<string>();
+    const { r, cols, rows } = groups; const seen = new Set<string>(); let nested = 0;
     for (const row of rows) {
       const id = str(row[cols.id]); const name = str(row[cols.name]) || `Group ${id}`;
       const name2 = cols.name2 ? str(row[cols.name2]) || null : null;
       const sort = cols.sort ? Math.round(num(row[cols.sort])) || 0 : 0;
       const color = cols.color && /^#[0-9a-f]{6}$/i.test(str(row[cols.color])) ? str(row[cols.color]) : null;
       const active = cols.active ? truthy(row[cols.active]) : true;
+      const image = cols.image ? takeImage(row[cols.image], 'g', id) : null;
+      if (cols.parent && Number(row[cols.parent]) > 0) nested++;
       seen.add(id);
       let nid = await map.get('group', id);
-      if (nid) { r.updated++; if (!dryRun) await db.execute('UPDATE menu_groups SET name_primary=?, name_secondary=?, sort_order=?, color=COALESCE(?, color), is_active=? WHERE id=?', [name, name2, sort, color, active ? 1 : 0, nid]); }
-      else { r.created++; if (!dryRun) { const [ins]: any = await db.execute('INSERT INTO menu_groups (branch_id, name_primary, name_secondary, sort_order, color, is_active) VALUES (?,?,?,?,?,?)', [branchId, name, name2, sort, color, active ? 1 : 0]); nid = ins.insertId; } }
+      if (nid) { r.updated++; if (!dryRun) await db.execute('UPDATE menu_groups SET name_primary=?, name_secondary=?, sort_order=?, color=COALESCE(?, color), image_url=COALESCE(?, image_url), is_active=? WHERE id=?', [name, name2, sort, color, image, active ? 1 : 0, nid]); }
+      else { r.created++; if (!dryRun) { const [ins]: any = await db.execute('INSERT INTO menu_groups (branch_id, name_primary, name_secondary, sort_order, color, image_url, is_active) VALUES (?,?,?,?,?,?,?)', [branchId, name, name2, sort, color, image, active ? 1 : 0]); nid = ins.insertId; } }
       if (nid) { groupIds.set(id, nid); await map.set('group', id, nid); }
       sample(r, { group: name, secondary: name2 });
     }
+    if (nested) r.notes.push(`${nested} groups are sub-groups in the old system; the new menu has one level, so they are imported as normal groups`);
+    imageNote(r);
     await deactivateMissing(r, 'group', seen, 'menu_groups');
   }
   const items = await read('items', 'menu items');
@@ -216,13 +267,29 @@ export async function importMasters(opts: {
       const barcode = cols.barcode ? str(row[cols.barcode], 100) || null : null;
       const sort = cols.sort ? Math.round(num(row[cols.sort])) || 0 : 0;
       const active = cols.active ? truthy(row[cols.active]) : true;
+      const image = cols.image ? takeImage(row[cols.image], 'i', id) : null;
       seen.add(id);
       let nid = await map.get('item', id);
-      if (nid) { r.updated++; if (!dryRun) await db.execute('UPDATE menu_items SET group_id=?, name_primary=?, name_secondary=?, price=?, price_takeaway=?, vat_rate=?, barcode=?, sort_order=?, is_active=? WHERE id=?', [gid, name, name2, price, takeaway, vat, barcode, sort, active ? 1 : 0, nid]); }
-      else { r.created++; if (!dryRun) { const [ins]: any = await db.execute('INSERT INTO menu_items (group_id, code, name_primary, name_secondary, price, price_takeaway, vat_rate, barcode, sort_order, is_active) VALUES (?,?,?,?,?,?,?,?,?,?)', [gid, `L${id}`, name, name2, price, takeaway, vat, barcode, sort, active ? 1 : 0]); nid = ins.insertId; } }
+      if (nid) { r.updated++; if (!dryRun) await db.execute('UPDATE menu_items SET group_id=?, name_primary=?, name_secondary=?, price=?, price_takeaway=?, vat_rate=?, barcode=?, sort_order=?, image_url=COALESCE(?, image_url), is_active=? WHERE id=?', [gid, name, name2, price, takeaway, vat, barcode, sort, image, active ? 1 : 0, nid]); }
+      else { r.created++; if (!dryRun) { const [ins]: any = await db.execute('INSERT INTO menu_items (group_id, code, name_primary, name_secondary, price, price_takeaway, vat_rate, barcode, sort_order, image_url, is_active) VALUES (?,?,?,?,?,?,?,?,?,?,?)', [gid, `L${id}`, name, name2, price, takeaway, vat, barcode, sort, image, active ? 1 : 0]); nid = ins.insertId; } }
       if (nid) await map.set('item', id, nid);
       sample(r, { item: name, price });
     }
+    imageNote(r);
+    // Names in other languages (Arabic / Russian): items_unicode holds one row per item and language
+    const uni = profile.tables.find((t) => t.name.toLowerCase() === 'items_unicode');
+    if (uni && uni.columns.some((c) => c.name === 'iu_itemID') && uni.columns.some((c) => c.name === 'iu_name')) {
+      let ar = 0, ru = 0;
+      for (const u of await q('SELECT iu_itemID, iu_name FROM `' + uni.name + '`')) {
+        const nid = await map.get('item', str(u.iu_itemID)); const nm = str(u.iu_name, 200);
+        if (!nid || !nm) continue;
+        const lang = SCRIPT(nm);
+        if (lang !== 'ar' && lang !== 'ru') continue;
+        lang === 'ar' ? ar++ : ru++;
+        if (!dryRun) await db.execute(`UPDATE menu_items SET name_${lang} = ? WHERE id = ?`, [nm, nid]);
+      }
+      r.notes.push(`Translations: ${ar} Arabic and ${ru} Russian item names imported from items_unicode`);
+    } else r.notes.push('No items_unicode table: Arabic/Russian item names were not imported');
     await deactivateMissing(r, 'item', seen, 'menu_items');
   }
 
@@ -231,7 +298,17 @@ export async function importMasters(opts: {
   if (emps) {
     const { r, cols, rows } = emps; const seen = new Set<string>();
     if (!cols.pin) r.notes.push('No PIN column found: employees are imported INACTIVE and need a PIN in Back Office.');
-    r.notes.push('Roles are not copied (unknown in the old system): everyone is imported as waiter; promote managers after the import.');
+    // Roles: guessed from the name of the employee group (manager / cashier / waiter); everything else = waiter
+    const grpName = new Map<string, string>();
+    const eg = profile.tables.find((t) => t.name.toLowerCase() === 'employeesgroups');
+    if (eg && cols.group) for (const g of await q('SELECT employeesGroupID AS id, empGrpPrimeLang AS a, empGrpSecLang AS b FROM `' + eg.name + '`')) grpName.set(str(g.id), `${str(g.a)} ${str(g.b)}`.toLowerCase());
+    const roleOf = (gid: string): 'admin' | 'manager' | 'cashier' | 'waiter' => {
+      const n = grpName.get(gid) || '';
+      if (/מנהל|manager|admin|בעלים|owner/.test(n)) return 'manager';
+      if (/קופא|cashier/.test(n)) return 'cashier';
+      return 'waiter';
+    };
+    r.notes.push('Roles are guessed from the old employee group names (manager / cashier, otherwise waiter). Nobody is made administrator: promote the owner in the Admin panel.');
     const usedPins = new Set<string>();
     // a PIN that an existing (new-system) employee already uses would make logins ambiguous
     const [existing]: any = await db.execute('SELECT pin FROM employees WHERE branch_id = ? AND is_active = 1', [branchId]);
@@ -254,7 +331,7 @@ export async function importMasters(opts: {
         r.created++;
         if (!dryRun) {
           const hash = await bcrypt.hash(pinOk ? pinRaw : `x${Math.random()}${Date.now()}`, 10);
-          const [ins]: any = await db.execute('INSERT INTO employees (branch_id, code, first_name, last_name, role, pin, is_active) VALUES (?,?,?,?,?,?,?)', [branchId, `L${id}`, first, last, 'waiter', hash, active ? 1 : 0]);
+          const [ins]: any = await db.execute('INSERT INTO employees (branch_id, code, first_name, last_name, role, pin, is_active) VALUES (?,?,?,?,?,?,?)', [branchId, `L${id}`, first, last, cols.group ? roleOf(str(row[cols.group])) : 'waiter', hash, active ? 1 : 0]);
           nid = ins.insertId;
         }
       }

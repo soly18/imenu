@@ -2,6 +2,7 @@ import { pool } from '../db/connection';
 import { encrypt, decrypt } from './secret';
 import { withLegacy, explainError, type LegacyParams } from './legacyDb';
 import { profileLegacy, type LegacyProfile } from './profile';
+import path from 'path';
 import { importMasters, type ImportReport } from './importer';
 
 export type MigrationState = 'idle' | 'offline' | 'connected' | 'needs_approval' | 'synced' | 'error' | 'running';
@@ -109,7 +110,8 @@ export async function runPipeline(branchId: number, mode: 'dry' | 'import' | 'au
       const conn = await pool.getConnection();
       try {
         await conn.beginTransaction();
-        const report = await importMasters({ q, profile, db: conn as any, branchId, dryRun: !doImport, defaultVat });
+        const report = await importMasters({ q, profile, db: conn as any, branchId, dryRun: !doImport, defaultVat,
+          imagesDir: process.env.LEGACY_IMAGES_DIR || path.join(__dirname, '..', '..', 'legacy-images') });
         if (doImport) await conn.commit(); else await conn.rollback();
         return { profile, report, doImport };
       } catch (e) { await conn.rollback(); throw e; } finally { conn.release(); }

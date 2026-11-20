@@ -1,3 +1,4 @@
+import { UPLOAD_DIR } from './uploads';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -46,6 +47,7 @@ app.use('/api/auth/login', rateLimit({
 }));
 
 // ── Routes ────────────────────────────────────────────────────────────────
+app.use('/uploads', express.static(UPLOAD_DIR, { maxAge: '1h' }));
 app.use('/api/auth',      authRoutes);
 app.use('/api/menu',      menuRoutes);
 app.use('/api/orders',    ordersRoutes);

@@ -8,6 +8,8 @@ import { DragScroll } from '@/hooks/useDragScroll';
 import { useAuthStore } from '@/store/authStore';
 import { usePosStore } from '@/store/posStore';
 import { localName } from '@/utils/localName';
+import { mediaUrl } from '@/api/client';
+import MenuThumb from '@/components/common/MenuThumb';
 import type { MenuItem, MenuGroup } from '@imenu25/shared';
 
 // ── Order Item Row ────────────────────────────────────────────
@@ -106,7 +108,7 @@ export default function PosPage() {
 
   const { data: groups = [] } = useQuery<MenuGroup[]>({
     queryKey: ['menu-groups'],
-    queryFn: menuApi.groups,
+    queryFn: () => menuApi.groups(),
   });
 
   // show the first category automatically, so a new order never starts with an empty screen
@@ -179,13 +181,14 @@ export default function PosPage() {
             <button
               key={g.id}
               onClick={() => setActiveGroup(g.id)}
-              className={`group-btn flex-shrink-0 ${
+              className={`group-btn flex-shrink-0 flex items-center gap-2 ${
                 activeGroup === g.id
                   ? 'bg-brand-500 text-white'
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-500'
               }`}
               style={activeGroup !== g.id && g.color ? { borderLeft: `4px solid ${g.color}` } : {}}
             >
+              <MenuThumb imageUrl={g.imageUrl} icon={g.icon} className="w-7 h-7" iconClass="w-4 h-4" />
               {localName(g, i18n.language)}
             </button>
           ))}
@@ -208,6 +211,9 @@ export default function PosPage() {
                   onClick={() => handleAddItem(item)}
                   className="menu-item-card"
                 >
+                  {item.imageUrl
+                    ? <img src={mediaUrl(item.imageUrl)} alt="" loading="lazy" draggable={false} className="w-full h-16 object-cover rounded-lg mb-1" />
+                    : item.icon ? <MenuThumb icon={item.icon} className="w-full h-12 mb-1" iconClass="w-6 h-6" /> : null}
                   <p className="font-semibold text-gray-800 dark:text-gray-100 text-xs leading-tight mb-1 line-clamp-2">
                     {localName(item, i18n.language)}
                   </p>

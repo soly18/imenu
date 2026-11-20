@@ -48,6 +48,9 @@ export interface MenuGroup {
   isActive: boolean;
   color?: string;
   imageUrl?: string;
+  icon?: string | null;
+  nameAr?: string | null;
+  nameRu?: string | null;
 }
 
 export interface MenuItem {
@@ -64,6 +67,9 @@ export interface MenuItem {
   isCombo: boolean;
   isPizza: boolean;
   imageUrl?: string;
+  icon?: string | null;
+  nameAr?: string | null;
+  nameRu?: string | null;
   barcode?: string;
   weightItem: boolean;
 }

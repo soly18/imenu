@@ -343,5 +343,36 @@
     "pending": "Waiting for approval",
     "deviceId": "Device ID",
     "retry": "Check again"
+  },
+  "menuEditor": {
+    "newGroup": "New group",
+    "newItem": "New item",
+    "search": "Search…",
+    "allGroups": "All groups",
+    "hidden": "Hidden",
+    "empty": "Nothing here yet",
+    "photo": "Photo",
+    "removePhoto": "Remove photo",
+    "icon": "Outline icon (used when there is no photo)",
+    "noIcon": "None",
+    "nameHe": "Name (Hebrew)",
+    "nameEn": "Name (English)",
+    "nameAr": "Name (Arabic)",
+    "nameRu": "Name (Russian)",
+    "group": "Group",
+    "barcode": "Barcode",
+    "price": "Price",
+    "takeawayPrice": "Takeaway price (optional)",
+    "color": "Colour",
+    "visible": "Show on the POS",
+    "saved": "Saved",
+    "err": {
+      "generic": "Could not save",
+      "NAME_REQUIRED": "A name is required",
+      "BAD_PRICE": "Enter a valid price",
+      "BAD_GROUP": "Choose a group",
+      "BAD_IMAGE": "Could not read this picture",
+      "IMAGE_TOO_BIG": "Picture is too big"
+    }
   }
 }
